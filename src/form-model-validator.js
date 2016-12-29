@@ -277,8 +277,8 @@ export default class FormModelValidator {
                         }
                     } else {
                         // if each array item is meta, then add value of that meta to array
-                        if (FormModelValidator.objectIsMeta(arrayItem)) {
-                            arrayForJson.push({ key: arrayItem.key, value: arrayItem.value });
+                        if (arrayItem.key &&  FormModelValidator.objectIsMeta(arrayItem.value)) {
+                            arrayForJson.push({ key: arrayItem.key, value: arrayItem.value.value });
                         }
                         else {
                             let objectWithManyValues = {
