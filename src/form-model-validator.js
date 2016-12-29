@@ -232,7 +232,7 @@ export default class FormModelValidator {
     }
 
     // fieldName can contains "." Function split field name by dot and creates nested array
-    // example: contactInfo.labels[] will result into.
+    // example: contactInfo.labels will result into.
     // { contactInfo: { 
     //     labels: []
     // }
