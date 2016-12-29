@@ -151,13 +151,17 @@ export class PersonFormModelValidators {
 
 ### FormModelValidator
 
-`getMetaByPath(formModel, path)` - get meta object from `formModel` by path string.
+#### getMetaByPath(formModel, path)
+Get meta object from `formModel` by path string.
 
-`getValidatorsByPath(formModelValidators, path)` - get array of validators for given path.
+#### getValidatorsByPath(formModelValidators, path)
+Get array of validators for given path.
 
-`fieldNameIsArray(fieldName)` - true if field name points to array. Example of field name: `labels[some_unique_key]` **(!!! may be we should rename this method to pathIsArray(path)**
+#### fieldNameIsArray(fieldName)
+Returns true if field name points to array. Example of field name: `labels[some_unique_key]` **(!!! may be we should rename this method to pathIsArray(path)**
 
-`parseFieldNameToArray(fieldName)` - takes field name (or path) that points to array, and returns following object
+#### parseFieldNameToArray(fieldName)
+Takes field name (or path) that points to array, and returns following object:
 ```javascript
 {
     itemKey: 'unique_key_of_array_item',
@@ -168,13 +172,17 @@ export class PersonFormModelValidators {
 }
 ```
 
-`getArrayIndexByKey(formModelArray, key)` - returns index of array item that contains passed unique key
+#### getArrayIndexByKey(formModelArray, key)
+Returns index of array item that contains passed unique key
 
-`isFieldValid(formModel, formModelValidators, fieldName)` - function finds meta by path, and runs validators against meta's value. If validator returns false, we add errors message from validator to meta's errors array. Returns true if meta object is valid.
+#### isFieldValid(formModel, formModelValidators, fieldName)
+Function finds meta by path, and runs validators against meta's value. If validator returns false, we add errors message from validator to meta's errors array. Returns true if meta object is valid.
 
-`isModelValid(formModel, formModelValidators, stopOnFirstError)` - function takes all validators and validates corresponding meta object in form model. While validating, `errors` property of each meta is filled of validation error messages. If `stopOnFirstError` is set to true (default is false), then validation process stops after first meta object is invalid. Returns true if form model is valid.
+#### isModelValid(formModel, formModelValidators, stopOnFirstError)
+Function takes all validators and validates corresponding meta object in form model. While validating, `errors` property of each meta is filled of validation error messages. If `stopOnFirstError` is set to true (default is false), then validation process stops after first meta object is invalid. Returns true if form model is valid.
 
-`replaceErrors(formModel, errors)` - function takes errors as argument, and replaces errors in form model with passed errors object. `errors` is an object in following format:
+#### replaceErrors(formModel, errors)
+Function takes errors as argument, and replaces errors in form model with passed errors object. `errors` is an object in following format:
 ```javascript
 {
     'path_to_meta': [
@@ -186,9 +194,11 @@ export class PersonFormModelValidators {
 ```
 
 
-`objectIsMeta(obj)` - returns true if object has `value`, `errors` and `title` property.
+#### objectIsMeta(obj) 
+Returns true if object has `value`, `errors` and `title` property.
 
-`getOrCreateNestedObjects(json, fieldPath)` - function takes json object, and adds nested object by path. Function return deepest object created.
+#### getOrCreateNestedObjects(json, fieldPath)
+Function takes json object, and adds nested object by path. Function return deepest object created.
 
 Example:
 `getOrCreateNestedObjects({}, 'contactInfo.address.city ')` will create following object:
@@ -203,7 +213,8 @@ Example:
 **Warning: city will not be added as object**
 
 
-`getOrCreateNestedArray(json, fieldPath)` - function takes json object, and adds array to json. Function returns created array.
+#### getOrCreateNestedArray(json, fieldPath)
+Function takes json object, and adds array to json. Function returns created array.
 
 Example:
 `getOrCreateNestedArray({}, 'contactInfo.labels')` will create following object:
@@ -215,13 +226,15 @@ Example:
 }
 ```
 
-`getJSON(formModel, formModelValidators)` - function converts form model into json object. Following rules are applied:
+#### getJSON(formModel, formModelValidators)
+Function converts form model into json object. Following rules are applied:
 
 First, `_modelErrors` meta is deleted from form model. It is used to display complex validation errors on web page.
 
 Next, form models properties that are arrays, are converted into array on json. Meta peoperties converted into simple key/value property for json.
 
-`getErrors(forModel)` - function accepts form model and return plain json object with just errors. Example of return value:
+#### getErrors(forModel)
+Function accepts form model and return plain json object with just errors. Example of return value:
 ```javascript
 { 
     email: ['error1', 'error2'], 
@@ -229,4 +242,5 @@ Next, form models properties that are arrays, are converted into array on json. 
 }
 ```
 
-`hasExistingErrors(formModel)` - function returns true if form model has errors (validators will not be run agains form model field).
+#### hasExistingErrors(formModel)
+Function returns true if form model has errors (validators will not be run agains form model field).
