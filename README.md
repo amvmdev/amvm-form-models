@@ -62,7 +62,11 @@ export class PersonFormModel {
                 }
             },
             //... more object in this array, each with unique key
-        ]  
+        ],
+        
+        _modelErrors: {
+            errors: []
+        }
 }
 ```
 
@@ -80,6 +84,8 @@ errors[] | Array of errors after running all validators against value property
 `labels` property is array. Each array item contains object that has just 2 properties: `key` and `value`. `value` is meta.
 
 `emails` property is array. Each array item contains obejct with `key` property, and many meta objects. Thats why `name` property of each meta obejct has format of `emails[some_unique_key].%property_name%`
+
+`_modelErrors` is special property that contains just errors of complex validation. Complex validation does not belong to specific meta. Complex validation validates whole form model. This property will be automatically created if form model validators  class contains property `_modelErrors` with validators.
 
 Resulting JSON will have following shape:
 ```javascript
@@ -126,7 +132,18 @@ export class PersonFormModelValidators {
                 validator: (value, formModel) => true | false,
                 errorMessage: 'Error message'
             }            
-        ] 
+        ],
+        this._modelErrors = [
+            {
+                validator: (formModel) => {                   
+                    let result = false;
+                    // do some validation
+                    
+                    return result;
+                },
+                errorMessage: 'Form model is invalid or incomplete...'
+            }
+        ]
     }
 }
 ```
@@ -134,10 +151,25 @@ export class PersonFormModelValidators {
 
 ### FormModelValidator
 
-`formModel` - class that contains "meta" objects. This class stores data.
+`getMetaByPath(formModel, path)` - get meta object from `formModel` by path string.
 
-`formModelValidators` - class that contains validators for specific meta objects.
+`getValidatorsByPath(formModelValidators, path)` - get array of validators for given path.
 
-`getMetaByPath(formModel, path)` - get meta object from `formModel` by path string
+`fieldNameIsArray(fieldName)` - true if field name points to array. Example of field name: `labels[some_unique_key]` **(!!! may be we should rename this method to pathIsArray(path)**
 
-`getValidatorsByPath(formModelValidators, path)` - get array of validators for given path
+`parseFieldNameToArray(fieldName)` - takes field name (or path) that points to array, and returns following object
+```javascript
+{
+    itemKey: 'unique_key_of_array_item',
+    pathToArray: 'name_of_array_property_on_form_model',
+    arrayItemIsMeta: true if arrray item contains key and value properties only,
+    metaPropertyName: 'name of array item property that contains meta, if arrayItemIsMeta is false',
+    nameOfValidatorField: 'property name on validator class that responsible of validation array item meta '
+}
+```
+
+`getArrayIndexByKey(formModelArray, key)` - returns index of array item that contains passed unique key
+
+`isFieldValid(formModel, formModelValidators, fieldName)` - function finds meta by path, and runs validators against meta's value. If validator returns false, we add errors message from validator to meta's errors array. Returns true if meta object is valid.
+
+`isModelValid(formModel, formModelValidators, stopOnFirstError)` - function takes all validators and validates corresponding meta object in form model. While validating, `errors` property of each meta is filled of validation error messages. If `stopOnFirstError` is set to true (default is false), then validation process stops after first meta object is invalid. Returns true if form model is valid.
