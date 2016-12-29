@@ -173,3 +173,60 @@ export class PersonFormModelValidators {
 `isFieldValid(formModel, formModelValidators, fieldName)` - function finds meta by path, and runs validators against meta's value. If validator returns false, we add errors message from validator to meta's errors array. Returns true if meta object is valid.
 
 `isModelValid(formModel, formModelValidators, stopOnFirstError)` - function takes all validators and validates corresponding meta object in form model. While validating, `errors` property of each meta is filled of validation error messages. If `stopOnFirstError` is set to true (default is false), then validation process stops after first meta object is invalid. Returns true if form model is valid.
+
+`replaceErrors(formModel, errors)` - function takes errors as argument, and replaces errors in form model with passed errors object. `errors` is an object in following format:
+```javascript
+{
+    'path_to_meta': [
+        'error message 1',
+        'error message 2'        
+    ],
+    // ... more properties
+}
+```
+
+
+`objectIsMeta(obj)` - returns true if object has `value`, `errors` and `title` property.
+
+`getOrCreateNestedObjects(json, fieldPath)` - function takes json object, and adds nested object by path. Function return deepest object created.
+
+Example:
+`getOrCreateNestedObjects({}, 'contactInfo.address.city ')` will create following object:
+```javascript
+{
+    contactInfo: {
+        address: {
+        }
+    }
+}
+```
+**Warning: city will not be added as object**
+
+
+`getOrCreateNestedArray(json, fieldPath)` - function takes json object, and adds array to json. Function returns created array.
+
+Example:
+`getOrCreateNestedArray({}, 'contactInfo.labels')` will create following object:
+```javascript
+{
+    contactInfo: {
+        labels: []
+    }
+}
+```
+
+`getJSON(formModel, formModelValidators)` - function converts form model into json object. Following rules are applied:
+
+First, `_modelErrors` meta is deleted from form model. It is used to display complex validation errors on web page.
+
+Next, form models properties that are arrays, are converted into array on json. Meta peoperties converted into simple key/value property for json.
+
+`getErrors(forModel)` - function accepts form model and return plain json object with just errors. Example of return value:
+```javascript
+{ 
+    email: ['error1', 'error2'], 
+    firstName: ['error3', 'error4'] 
+}
+```
+
+`hasExistingErrors(formModel)` - function returns true if form model has errors (validators will not be run agains form model field).
