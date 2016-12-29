@@ -10,7 +10,7 @@
 
 ### Example of form model
 ```javascript
-export class Person {
+export class PersonFormModel {
     constructor(json) {
         json = json || {};
         this.name = {
@@ -82,14 +82,52 @@ errors[] | Array of errors after running all validators against value property
 `emails` property is array. Each array item contains obejct with `key` property, and many meta objects. Thats why `name` property of each meta obejct has format of `emails[some_unique_key].%property_name%`
 
 Resulting JSON will have following shape:
-```
+```javascript
 {
-    name: 'Markus`,
+    name: 'Markus',
     labels: [ 'label_1', 'label_2'],
     emails: [ 
-        { type: 'Personal', email: 'user@example.com },
-        { type: 'Work', email: 'userwork@example.com },
+        { type: 'Personal', email: 'user@example.com' },
+        { type: 'Work', email: 'userwork@example.com' },
     ]
+}
+```
+
+### Example of form model validators
+```javascript
+export class PersonFormModelValidators {
+    constructor() {
+        this.name = [
+            {
+                validator: (value, formModel) => true | false,
+                errorMessage: 'Error message'
+            },
+            {
+                validator: (value, formModel) => true | false,
+                errorMessage: 'Error message 2'
+            }
+        ],
+
+        this['labels[]'] = [
+            {
+                validator: (value, formModel) => true | false,
+                errorMessage: 'Error message'
+            }            
+        ],
+        
+        this['emails[].type'] = [
+            {
+                validator: (value, formModel) => true | false,
+                errorMessage: 'Error message'
+            }            
+        ],
+        this['emails[].email'] = [
+            {
+                validator: (value, formModel) => true | false,
+                errorMessage: 'Error message'
+            }            
+        ] 
+    }
 }
 ```
 
