@@ -436,11 +436,12 @@ module.exports =
 	        value: function getOrCreateNestedArray(json, fieldPath) {
 	            var fields = fieldPath.split('.');
 	            var nestedObject = json;
+	            // loop path and build or get deepest object        
 	            for (var fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
 	                var field = fields[fieldIndex];
 	                // if it is the last field in path, then create empty array
 	                if (fieldIndex === fields.length - 1) {
-	                    nestedObject[field] = [];
+	                    if (typeof nestedObject[field] === 'undefined') nestedObject[field] = [];
 	                } else {
 	                    if (nestedObject.hasOwnProperty(field) === false) nestedObject[field] = {};
 	                }
@@ -524,10 +525,11 @@ module.exports =
 	                if (_lodash2.default.isArray(formModelFieldValue)) {
 	                    // this is array, loop array to get errors from array items
 	                    formModelFieldValue.forEach(function (arrayItem) {
-	                        if (FormModelValidator.objectIsMeta(arrayItem)) {
+	                        if (arrayItem.key && arrayItem.value) {
+	                            // FormModelValidator.objectIsMeta(arrayItem)
 	                            // array item is meta, get errors form that meta
-	                            if (arrayItem.errors && arrayItem.errors.length > 0) {
-	                                errors[formModelFieldName + '[' + arrayItem.key + ']'] = arrayItem.errors;
+	                            if (arrayItem.value.errors && arrayItem.value.errors.length > 0) {
+	                                errors[formModelFieldName + '[' + arrayItem.key + ']'] = arrayItem.value.errors;
 	                            }
 	                        } else {
 	                            // array item is object that contains meta, loop object proeprties and get errors from each meta

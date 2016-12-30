@@ -1,6 +1,6 @@
 export const personFormModel = {
-    
-    'not.meta': {        
+
+    'not.meta': {
     },
 
     'name.first': {
@@ -11,9 +11,9 @@ export const personFormModel = {
     },
 
     'name.last': {
-        title: 'Last name',        
+        title: 'Last name',
         name: 'name.last',
-        value: 'Brown',        
+        value: 'Brown',
         errors: []
     },
 
@@ -35,7 +35,7 @@ export const personFormModel = {
             type: {
                 title: 'Email type',
                 name: 'emails[key1].type',
-                value: 'Work',                
+                value: 'Work',
                 errors: []
             },
             email: {
@@ -56,7 +56,7 @@ export const personFormModel = {
             email: {
                 title: 'Email',
                 name: 'emails[key2].email',
-                value: 'john@home.com',
+                value: 'john@gmail.com',
                 errors: []
             }
         }
@@ -81,5 +81,22 @@ export const personFormModel = {
                 errors: []
             }
         }
-    ]
+    ],
+
+    // tags: [
+    //     {
+    //         key: 'key1',
+    //         title: 'Tag',
+    //         name: 'tags[key1]',
+    //         value: 'big tag',
+    //         errors: []
+    //     },
+    //     {
+    //         key: 'key2',
+    //         title: 'Tag',
+    //         name: 'tags[key2]',
+    //         value: 'small tag',
+    //         errors: []
+    //     }
+    // ]
 }
