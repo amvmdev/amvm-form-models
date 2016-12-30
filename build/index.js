@@ -400,7 +400,7 @@ module.exports =
 	        key: 'objectIsMeta',
 	        value: function objectIsMeta(obj) {
 	            if (obj) {
-	                return obj.hasOwnProperty('value') && obj.hasOwnProperty('errors') && obj.hasOwnProperty('title');
+	                return obj.hasOwnProperty('value') && !_lodash2.default.isObject(obj.value);
 	            }
 	            return false;
 	        }
@@ -426,7 +426,7 @@ module.exports =
 	        }
 	
 	        // fieldName can contains "." Function split field name by dot and creates nested array
-	        // example: contactInfo.labels[] will result into.
+	        // example: contactInfo.labels will result into.
 	        // { contactInfo: { 
 	        //     labels: []
 	        // }
@@ -477,8 +477,8 @@ module.exports =
 	                                }
 	                            } else {
 	                                // if each array item is meta, then add value of that meta to array
-	                                if (FormModelValidator.objectIsMeta(arrayItem)) {
-	                                    arrayForJson.push({ key: arrayItem.key, value: arrayItem.value });
+	                                if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem.value)) {
+	                                    arrayForJson.push({ key: arrayItem.key, value: arrayItem.value.value });
 	                                } else {
 	                                    (function () {
 	                                        var objectWithManyValues = {

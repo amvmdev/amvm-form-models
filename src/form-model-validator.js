@@ -208,7 +208,7 @@ export default class FormModelValidator {
     // function checks is passed object has shape of metadata
     static objectIsMeta(obj) {
         if (obj) {
-            return obj.hasOwnProperty('value') && obj.hasOwnProperty('errors') && obj.hasOwnProperty('title');
+            return obj.hasOwnProperty('value') && !_.isObject(obj.value);
         }
         return false;
     }

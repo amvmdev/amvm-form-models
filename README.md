@@ -4,6 +4,8 @@
 ## Installation
 `npm install amvm-form-models --save`
 
+## Running tests
+`npm test`
 
 
 ## Documentation
