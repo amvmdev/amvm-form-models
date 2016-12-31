@@ -65,21 +65,18 @@ export const personFormModel = {
     labels: [
         {
             key: 'key1',
-            value: {
-                title: 'Label',
-                name: 'labels[key1]',
-                value: 'red',
-                errors: []
-            }
+            title: 'Label',
+            name: 'labels[key1]',
+            value: 'red',
+            errors: []
+
         },
         {
             key: 'key2',
-            value: {
-                title: 'Label',
-                name: 'labels[key2]',
-                value: 'blue',
-                errors: []
-            }
+            title: 'Label',
+            name: 'labels[key2]',
+            value: 'blue',
+            errors: []
         }
     ],
 

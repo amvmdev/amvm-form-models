@@ -50,15 +50,15 @@ module.exports =
 	
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
-	var _assert = __webpack_require__(74);
+	var _assert = __webpack_require__(73);
 	
 	var _assert2 = _interopRequireDefault(_assert);
 	
-	var _personFormModel = __webpack_require__(75);
+	var _personFormModel = __webpack_require__(74);
 	
-	var _invalidPersonFormModel = __webpack_require__(76);
+	var _invalidPersonFormModel = __webpack_require__(75);
 	
-	var _personFormModelValidators = __webpack_require__(77);
+	var _personFormModelValidators = __webpack_require__(76);
 	
 	var _formModelValidator = __webpack_require__(1);
 	
@@ -143,14 +143,14 @@ module.exports =
 	        _assert2.default.equal(indexOne, 1);
 	    });
 	
-	    it("FormModelValidator.getArrayIndex(formModelArray, 'InvalidKey') returns -1 for non-existing key", function () {
+	    it("FormModelValidator.getArrayIndex(personFormModel.emails, 'InvalidKey') returns -1 for non-existing key", function () {
 	        var indexMinusOne = _formModelValidator2.default.getArrayIndexByKey(_personFormModel.personFormModel.emails, 'InvalidKey');
 	        _assert2.default.equal(indexMinusOne, -1);
 	    });
 	
-	    it("FormModelValidator.getArrayIndex(personFormModel.tags, 'key1') returns index 0", function () {
-	        var index = _formModelValidator2.default.getArrayIndexByKey(_personFormModel.personFormModel.tags, 'key1');
-	        _assert2.default.equal(index, 0);
+	    it("FormModelValidator.getArrayIndex(personFormModel.labels, 'InvalidKey') returns -1 for non-existing key", function () {
+	        var indexMinusOne = _formModelValidator2.default.getArrayIndexByKey(_personFormModel.personFormModel.labels, 'InvalidKey');
+	        _assert2.default.equal(indexMinusOne, -1);
 	    });
 	});
 	
@@ -372,7 +372,7 @@ module.exports =
 	        _assert2.default.equal(json.labels[1].key, 'key2');
 	        _assert2.default.equal(json.labels[1].value, 'blue');
 	
-	        console.log(json);
+	        //console.log(json);
 	    });
 	});
 	
@@ -487,9 +487,12 @@ module.exports =
 	                        if (meta != null) return;
 	                        // array item can be meta or object that has meta inside
 	                        if (arrayItem.key === arrInfo.itemKey) {
-	                            meta = arrInfo.arrayItemIsMeta ? arrayItem.value : arrayItem[arrInfo.metaPropertyName];
+	                            meta = arrInfo.arrayItemIsMeta ? arrayItem : arrayItem[arrInfo.metaPropertyName];
 	                        }
 	                    });
+	
+	                    // if variable meta is not actual meta, set it to undefined;
+	                    if (!FormModelValidator.objectIsMeta(meta)) meta = undefined;
 	                })();
 	            } else {
 	                meta = _lodash2.default.get(formModel, path);
@@ -670,7 +673,7 @@ module.exports =
 	                        // now loop items inside array and run validator against each meta
 	
 	                        formModelArray.forEach(function (arrayItem) {
-	                            var meta = arrInfo.arrayItemIsMeta ? arrayItem.value : arrayItem[arrInfo.metaPropertyName];
+	                            var meta = arrInfo.arrayItemIsMeta ? arrayItem : arrayItem[arrInfo.metaPropertyName];
 	                            meta.errors = [];
 	                            // run validator agains meta value
 	                            var _iteratorNormalCompletion3 = true;
@@ -738,7 +741,7 @@ module.exports =
 	        key: 'objectIsMeta',
 	        value: function objectIsMeta(obj) {
 	            if (obj) {
-	                return obj.hasOwnProperty('value') && !_lodash2.default.isObject(obj.value);
+	                return obj.hasOwnProperty('value') && !_lodash2.default.isObject(obj.value) && !_lodash2.default.isArray(obj.value);
 	            }
 	            return false;
 	        }
@@ -816,8 +819,8 @@ module.exports =
 	                                }
 	                            } else {
 	                                // if each array item is meta, then add value of that meta to array
-	                                if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem.value)) {
-	                                    arrayForJson.push({ key: arrayItem.key, value: arrayItem.value.value });
+	                                if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem)) {
+	                                    arrayForJson.push({ key: arrayItem.key, value: arrayItem.value });
 	                                } else {
 	                                    (function () {
 	                                        var objectWithManyValues = {
@@ -863,11 +866,11 @@ module.exports =
 	                if (_lodash2.default.isArray(formModelFieldValue)) {
 	                    // this is array, loop array to get errors from array items
 	                    formModelFieldValue.forEach(function (arrayItem) {
-	                        if (arrayItem.key && arrayItem.value) {
+	                        if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem)) {
 	                            // FormModelValidator.objectIsMeta(arrayItem)
 	                            // array item is meta, get errors form that meta
-	                            if (arrayItem.value.errors && arrayItem.value.errors.length > 0) {
-	                                errors[formModelFieldName + '[' + arrayItem.key + ']'] = arrayItem.value.errors;
+	                            if (arrayItem.errors && arrayItem.errors.length > 0) {
+	                                errors[formModelFieldName + '[' + arrayItem.key + ']'] = arrayItem.errors;
 	                            }
 	                        } else {
 	                            // array item is object that contains meta, loop object proeprties and get errors from each meta
@@ -898,6 +901,9 @@ module.exports =
 	        value: function hasExistingErrors(formModel) {
 	            var hasErrors = false;
 	            _lodash2.default.forOwn(formModel, function (formModelFieldValue, formModelFieldName) {
+	                if (hasErrors === true) {
+	                    return hasErrors;
+	                }
 	                if (_lodash2.default.isArray(formModelFieldValue)) {
 	                    // this is array, loop array to get errors from array items
 	                    formModelFieldValue.forEach(function (arrayItem) {
@@ -18044,14 +18050,14 @@ module.exports =
 
 /***/ },
 
-/***/ 74:
+/***/ 73:
 /***/ function(module, exports) {
 
 	module.exports = require("assert");
 
 /***/ },
 
-/***/ 75:
+/***/ 74:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -18121,40 +18127,24 @@ module.exports =
 	
 	    labels: [{
 	        key: 'key1',
-	        value: {
-	            title: 'Label',
-	            name: 'labels[key1]',
-	            value: 'red',
-	            errors: []
-	        }
-	    }, {
-	        key: 'key2',
-	        value: {
-	            title: 'Label',
-	            name: 'labels[key2]',
-	            value: 'blue',
-	            errors: []
-	        }
-	    }],
-	
-	    tags: [{
-	        key: 'key1',
-	        title: 'Tag',
-	        name: 'tags[key1]',
-	        value: 'big tag',
+	        title: 'Label',
+	        name: 'labels[key1]',
+	        value: 'red',
 	        errors: []
+	
 	    }, {
 	        key: 'key2',
-	        title: 'Tag',
-	        name: 'tags[key2]',
-	        value: 'small tag',
+	        title: 'Label',
+	        name: 'labels[key2]',
+	        value: 'blue',
 	        errors: []
 	    }]
+	
 	};
 
 /***/ },
 
-/***/ 76:
+/***/ 75:
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -18168,7 +18158,7 @@ module.exports =
 	
 	var _lodash2 = _interopRequireDefault(_lodash);
 	
-	var _personFormModel = __webpack_require__(75);
+	var _personFormModel = __webpack_require__(74);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -18197,19 +18187,18 @@ module.exports =
 	// creating invalid label (label value cannot exceed 5 characters)
 	invalidPersonFormModel.labels.push({
 	    key: 'key3',
-	    value: {
-	        title: 'Label',
-	        name: 'labels[key3]',
-	        value: 'very_long_value',
-	        errors: []
-	    }
+	    title: 'Label',
+	    name: 'labels[key3]',
+	    value: 'very_long_value',
+	    errors: []
+	
 	});
 	
 	exports.invalidPersonFormModel = invalidPersonFormModel;
 
 /***/ },
 
-/***/ 77:
+/***/ 76:
 /***/ function(module, exports) {
 
 	'use strict';

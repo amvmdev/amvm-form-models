@@ -32,10 +32,15 @@ export default class FormModelValidator {
                 // array item can be meta or object that has meta inside
                 if (arrayItem.key === arrInfo.itemKey) {
                     meta = arrInfo.arrayItemIsMeta
-                        ? arrayItem.value
+                        ? arrayItem
                         : arrayItem[arrInfo.metaPropertyName];
                 }
             });
+
+            // if variable meta is not actual meta, set it to undefined;
+            if(!FormModelValidator.objectIsMeta(meta)) 
+                meta = undefined;
+
         } else {
             meta = _.get(formModel, path);
         }
@@ -164,7 +169,7 @@ export default class FormModelValidator {
 
                 formModelArray.forEach((arrayItem) => {
                     let meta = arrInfo.arrayItemIsMeta
-                        ? arrayItem.value
+                        ? arrayItem
                         : arrayItem[arrInfo.metaPropertyName];
                     meta.errors = [];
                     // run validator agains meta value
@@ -208,7 +213,7 @@ export default class FormModelValidator {
     // function checks is passed object has shape of metadata
     static objectIsMeta(obj) {
         if (obj) {
-            return obj.hasOwnProperty('value') && !_.isObject(obj.value);
+            return obj.hasOwnProperty('value') && !_.isObject(obj.value) && !_.isArray(obj.value);
         }
         return false;
     }
@@ -279,8 +284,8 @@ export default class FormModelValidator {
                         }
                     } else {
                         // if each array item is meta, then add value of that meta to array
-                        if (arrayItem.key &&  FormModelValidator.objectIsMeta(arrayItem.value)) {
-                            arrayForJson.push({ key: arrayItem.key, value: arrayItem.value.value });
+                        if (arrayItem.key &&  FormModelValidator.objectIsMeta(arrayItem)) {
+                            arrayForJson.push({ key: arrayItem.key, value: arrayItem.value });
                         }
                         else {
                             let objectWithManyValues = {
@@ -323,10 +328,10 @@ export default class FormModelValidator {
             if (_.isArray(formModelFieldValue)) {
                 // this is array, loop array to get errors from array items
                 formModelFieldValue.forEach((arrayItem) => {
-                    if (arrayItem.key && arrayItem.value) { // FormModelValidator.objectIsMeta(arrayItem)
+                    if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem)) { // FormModelValidator.objectIsMeta(arrayItem)
                         // array item is meta, get errors form that meta
-                        if (arrayItem.value.errors && arrayItem.value.errors.length > 0) {
-                            errors[`${formModelFieldName}[${arrayItem.key}]`] = arrayItem.value.errors;
+                        if (arrayItem.errors && arrayItem.errors.length > 0) {
+                            errors[`${formModelFieldName}[${arrayItem.key}]`] = arrayItem.errors;
                         }
                     } else {
                         // array item is object that contains meta, loop object proeprties and get errors from each meta
@@ -355,6 +360,9 @@ export default class FormModelValidator {
     static hasExistingErrors(formModel) {
         let hasErrors = false;
         _.forOwn(formModel, (formModelFieldValue, formModelFieldName) => {
+            if(hasErrors === true) {
+                return hasErrors;    
+            }
             if (_.isArray(formModelFieldValue)) {
                 // this is array, loop array to get errors from array items
                 formModelFieldValue.forEach((arrayItem) => {

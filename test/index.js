@@ -80,15 +80,15 @@ describe('Field name is array and get correct index by key', function () {
         assert.equal(indexOne, 1);
     });
 
-    it("FormModelValidator.getArrayIndex(formModelArray, 'InvalidKey') returns -1 for non-existing key", function () {
+    it("FormModelValidator.getArrayIndex(personFormModel.emails, 'InvalidKey') returns -1 for non-existing key", function () {
         const indexMinusOne = FormModelValidator.getArrayIndexByKey(personFormModel.emails, 'InvalidKey');
         assert.equal(indexMinusOne, -1);
     });
 
-    it("FormModelValidator.getArrayIndex(personFormModel.tags, 'key1') returns index 0", function () {
-        const index = FormModelValidator.getArrayIndexByKey(personFormModel.tags, 'key1');
-        assert.equal(index, 0);
-    });
+     it("FormModelValidator.getArrayIndex(personFormModel.labels, 'InvalidKey') returns -1 for non-existing key", function () {
+        const indexMinusOne = FormModelValidator.getArrayIndexByKey(personFormModel.labels, 'InvalidKey');
+        assert.equal(indexMinusOne, -1);
+    });   
 
 });
 
@@ -221,7 +221,7 @@ describe('Validating array of meta objects', function () {
 describe('Validating form model', function () {
     
     it("isModelValid(personFormModel, personFormModelValidators) returns true", function () {
-        const isModelValid = FormModelValidator.isModelValid(personFormModel, personFormModelValidators);
+        const isModelValid = FormModelValidator.isModelValid(personFormModel, personFormModelValidators);        
         assert.equal(isModelValid, true);
     });
 
@@ -304,14 +304,14 @@ describe('Creating JSON', function () {
 
     it("getJSON(personFormModel, personFormModelValidators) correctly build json", function () {
 
-        let json = FormModelValidator.getJSON(personFormModel, personFormModelValidators);        
+        let json = FormModelValidator.getJSON(personFormModel, personFormModelValidators);
         assert.equal(json.name.first, 'John');
         assert.equal(json.name.last, 'Brown');
         assert.equal(json.isAdult, true);
         assert.equal(json.age, 30);
         
         // array of emails
-        assert.equal(json.emails.length, 2);                
+        assert.equal(json.emails.length, 2);
         assert.equal(json.emails[0].key, 'key1');
         assert.equal(json.emails[0].value.type, 'Work');
         assert.equal(json.emails[0].value.email, 'john@company.com');

@@ -27,12 +27,11 @@ invalidPersonFormModel.emails.push({
 // creating invalid label (label value cannot exceed 5 characters)
 invalidPersonFormModel.labels.push({
     key: 'key3',
-    value: {
-        title: 'Label',
-        name: 'labels[key3]',
-        value: 'very_long_value',
-        errors: []
-    }
+    title: 'Label',
+    name: 'labels[key3]',
+    value: 'very_long_value',
+    errors: []
+
 });
 
 export {
