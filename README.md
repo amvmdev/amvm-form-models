@@ -15,60 +15,84 @@
 export class PersonFormModel {
     constructor(json) {
         json = json || {};
-        this.name = {
-            value: _.get(json, 'name', ''),
-            title: 'Name',
-            name: 'name',
-            required: true,
-            maxlength: 50,
+        'name.first': {
+            title: 'First name',
+            name: 'name.first',
+            value: 'John'
+            // errors field is missing, but it is still meta
+        },
+        'name.last': {
+            title: 'Last name',
+            name: 'name.last',
+            value: 'Brown',
             errors: []
-        };
+        },
+        'isAdult': {
+            title: 'Is adult',
+            name: 'isAdult',
+            value: true // value is boolean
+        },
+        'age': {
+            title: 'Age',
+            name: 'age',
+            value: 30 // value is number
+        },        
         
-        this.labels: [
+        emails: [
             {
-                key: 'some_unique_key',
-                value: {
-                    value: 'label_1',
-                    title: 'Label',
-                    name: `labels[some_unique_key]`,
+                key: 'key1',
+                type: {
+                    title: 'Email type',
+                    name: 'emails[key1].type',
+                    value: 'Work',
+                    errors: []
+                },
+                email: {
+                    title: 'Email',
+                    name: 'emails[key1].email',
+                    value: 'john@company.com',
                     errors: []
                 }
             },
             {
-                key: 'another_unique_key',
-                value: {
-                    value: 'label_2',
-                    title: 'Label',
-                    name: `labels[another_unique_key]`,
+                key: 'key2',
+                type: {
+                    title: 'Email type',
+                    name: 'emails[key2].type',
+                    value: 'Personal',
+                    errors: []
+                },
+                email: {
+                    title: 'Email',
+                    name: 'emails[key2].email',
+                    value: 'john@gmail.com',
                     errors: []
                 }
             }
         ],
-
-        this.emails: [
+        
+        labels: [
             {
-                key: 'some_unique_key',
-                type: {
-                    value: 'Personal',
-                    title: 'E-mail type',
-                    name: `emails[some_unique_key].type`,
-                    errors: []
-                },        
-                email: {
-                    value: 'user@example.com',
-                    title: 'E-mail',
-                    name: `emails[some_unique_key].email`,
-                    required: true,
-                    maxLength: 25,
-                    errors: []
-                }
+                key: 'key1',
+                title: 'Label',
+                name: 'labels[key1]',
+                value: 'red',
+                errors: []
+
             },
-            //... more object in this array, each with unique key
-        ],
+            {
+                key: 'key2',
+                title: 'Label',
+                name: 'labels[key2]',
+                value: 'blue',
+                errors: []
+            }
+        ]  
         
         _modelErrors: {
             errors: []
         }
+    }
 }
 ```
 
@@ -83,7 +107,7 @@ maxlength | This value will be set as `maxlength` attribute on `<input>` tag
 name | Value of name property is used for name atribute of input tag
 errors[] | Array of errors after running all validators against value property
 
-`labels` property is array. Each array item contains object that has just 2 properties: `key` and `value`. `value` is meta.
+`labels` property is array. Each array item contains meta object with addition member called `key`.
 
 `emails` property is array. Each array item contains obejct with `key` property, and many meta objects. Thats why `name` property of each meta obejct has format of `emails[some_unique_key].%property_name%`
 
@@ -92,11 +116,16 @@ errors[] | Array of errors after running all validators against value property
 Resulting JSON will have following shape:
 ```javascript
 {
-    name: 'Markus',
+    name : {
+        first: 'John'
+        last: 'Bown'
+    },
+    isAdult: true,
+    age: 30,    
     labels: [ 'label_1', 'label_2'],
     emails: [ 
-        { type: 'Personal', email: 'user@example.com' },
-        { type: 'Work', email: 'userwork@example.com' },
+        { type: 'Work', email: 'ohn@company.com' },
+        { type: 'Personal', email: 'john@gmail.com' },
     ]
 }
 ```
@@ -105,45 +134,56 @@ Resulting JSON will have following shape:
 ```javascript
 export class PersonFormModelValidators {
     constructor() {
-        this.name = [
+        this['name.first'] = [
             {
-                validator: (value, formModel) => true | false,
-                errorMessage: 'Error message'
+                validator: (value, formModel) => value.length < 10,
+                errorMessage: 'First name must be less than 10 characters'
             },
             {
-                validator: (value, formModel) => true | false,
-                errorMessage: 'Error message 2'
+                validator: (value, formModel) => value && value.length > 0,
+                errorMessage: 'First name is required'
             }
         ],
 
+        this['name.last'] = [
+            {
+                validator: (value, formModel) => value && value.length > 0,
+                errorMessage: 'Last name is required'
+            },
+            {
+                validator: (value, formModel) => value != '1234567890',
+                errorMessage: 'Last name cannot be 1234567890'
+            }           
+        ]
+
         this['labels[]'] = [
             {
-                validator: (value, formModel) => true | false,
-                errorMessage: 'Error message'
+                validator: (value, formModel) => value.length < 5,
+                errorMessage: 'Label must be less than 5 characters'
             }            
-        ],
-        
+        ]
+
         this['emails[].type'] = [
             {
-                validator: (value, formModel) => true | false,
-                errorMessage: 'Error message'
+                validator: (value, formModel) => value == "Work" || value == "Personal",
+                errorMessage: 'Type of email can only be Work or Personal'
             }            
         ],
         this['emails[].email'] = [
             {
-                validator: (value, formModel) => true | false,
-                errorMessage: 'Error message'
+                validator: (value, formModel) => value.indexOf('@temp.com') == -1,
+                errorMessage: 'gmail.com is not allowed'
             }            
         ],
+        
         this._modelErrors = [
             {
-                validator: (formModel) => {                   
-                    let result = false;
-                    // do some validation
-                    
-                    return result;
-                },
-                errorMessage: 'Form model is invalid or incomplete...'
+                validator: (formModel) => formModel.labels.length <= 2,
+                errorMessage: 'Maximum 2 labels allowed'
+            },
+            {
+                validator: (formModel) => formModel.emails.length <= 2,
+                errorMessage: 'Maximum 1 email allowed'
             }
         ]
     }
