@@ -1,6 +1,6 @@
 {
   "name": "amvm-form-models",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Form model helpers",
   "main": "build/index.js",
   "files": [
