@@ -275,12 +275,14 @@ First, `_modelErrors` meta is deleted from form model. It is used to display com
 
 Next, form models properties that are arrays, are converted into array on json. Meta peoperties converted into simple key/value property for json.
 
-#### getErrors(forModel)
+#### getErrors(formModel)
 Function accepts form model and return plain json object with just errors. Example of return value:
 ```javascript
 { 
-    email: ['error1', 'error2'], 
-    firstName: ['error3', 'error4'] 
+    'name.first': ['error1', 'error2'], 
+    'name.last': ['error3', 'error4'],
+    'emails[key2].type': [ 'error 5' ],
+    'labels[key2]': [ 'error 6']
 }
 ```
 
