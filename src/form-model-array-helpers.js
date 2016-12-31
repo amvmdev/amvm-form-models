@@ -1,6 +1,3 @@
-import _ from 'lodash';
-
-
 // If array item is in this format:
 // { key: 'xxx', value: something} 
 // then new array will contain just what is inside value property
