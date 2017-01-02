@@ -21,9 +21,9 @@ export default class FormModelValidator {
     static getMetaByPath(formModel, path) {
         let meta = null;
 
-        if (FormModelValidator.fieldNameIsArray(path)) {
+        if (FormModelValidator.pathIsArray(path)) {
             // get info related to array of metas
-            let arrInfo = FormModelValidator.parseFieldNameToArray(path);
+            let arrInfo = FormModelValidator.parsePathToArray(path);
             let array = formModel[arrInfo.pathToArray]; // this array contains metas or objects with metas
             array.forEach((arrayItem) => {
                 // skip looping if we already found meta by key
@@ -51,9 +51,9 @@ export default class FormModelValidator {
     // function returns array of validators by path
     static getValidatorsByPath(formModelValidators, path) {
         let validators = null;
-        if (FormModelValidator.fieldNameIsArray(path)) {
+        if (FormModelValidator.pathIsArray(path)) {
             // get info related to array of metas
-            let arrInfo = FormModelValidator.parseFieldNameToArray(path);
+            let arrInfo = FormModelValidator.parsePathToArray(path);
             validators = formModelValidators[arrInfo.nameOfValidatorField];
         } else {
             validators = _.get(formModelValidators, path);
@@ -62,13 +62,13 @@ export default class FormModelValidator {
         return validators;
     }
 
-    // returns true if fieldname points to array
-    static fieldNameIsArray(fieldName) {
-        return fieldName.indexOf('[') !== -1;
+    // returns true if path points to array
+    static pathIsArray(path) {
+        return path.indexOf('[') !== -1;
     }
 
     // returns object with array paths and keys
-    static parseFieldNameToArray(fieldName) {
+    static parsePathToArray(path) {
         let result = {
             itemKey: null,
             pathToArray: null,
@@ -77,29 +77,29 @@ export default class FormModelValidator {
             nameOfValidatorField: null
         };
 
-        let indexOfArrayOpen = fieldName.indexOf('[');
-        let indexOfArrayClose = fieldName.indexOf(']');
-        let arrayItemKey = fieldName.substring(indexOfArrayOpen + 1, indexOfArrayClose);
+        let indexOfArrayOpen = path.indexOf('[');
+        let indexOfArrayClose = path.indexOf(']');
+        let arrayItemKey = path.substring(indexOfArrayOpen + 1, indexOfArrayClose);
 
         result.itemKey = arrayItemKey;
-        result.pathToArray = fieldName.substring(0, indexOfArrayOpen);
-        result.nameOfValidatorField = fieldName.replace(`[${result.itemKey}]`, '[]');
-        result.arrayItemIsMeta = fieldName.endsWith("]");
+        result.pathToArray = path.substring(0, indexOfArrayOpen);
+        result.nameOfValidatorField = path.replace(`[${result.itemKey}]`, '[]');
+        result.arrayItemIsMeta = path.endsWith("]");
         if (result.arrayItemIsMeta === false)
-            result.metaPropertyName = fieldName.substring(fieldName.indexOf("].") + 2);
+            result.metaPropertyName = path.substring(path.indexOf("].") + 2);
 
         return result;
     }
 
     // validate meta object
-    static isFieldValid(formModel, formModelValidators, fieldName) {
+    static isMetaValid(formModel, formModelValidators, path) {
         let valid = true;
-        // get validator for field of the model
-        let validators = FormModelValidator.getValidatorsByPath(formModelValidators, fieldName);
+        // get validator for path of the model
+        let validators = FormModelValidator.getValidatorsByPath(formModelValidators, path);
         validators = validators || [];
 
-        // complex validation (not for specific field)
-        if (fieldName === '_modelErrors') {
+        // complex validation (not for specific path)
+        if (path === '_modelErrors') {
             if (!formModel['_modelErrors'])
                 formModel['_modelErrors'] = { errors: [] };
             else
@@ -117,12 +117,12 @@ export default class FormModelValidator {
             }
 
         } else {
-            let meta = FormModelValidator.getMetaByPath(formModel, fieldName);
-            // get form model value for field            
+            let meta = FormModelValidator.getMetaByPath(formModel, path);
+            // get form model value for path            
             if (!meta) {
-                console.error(`FormModelValidator.isFieldValid: cannot find path of '${fieldName}' in form model. 
+                console.error(`FormModelValidator.isMetaValid: cannot find path of '${path}' in form model. 
                 Check form model and form model validators for matching keys`);
-                return true; // just mark field as valid
+                return true; // just mark meta as valid
             }
 
             // clear previous errors
@@ -141,12 +141,12 @@ export default class FormModelValidator {
         return valid;
     }
 
-    // function loop all fields and run validators for each field. Return type is boolean
+    // function loop all paths and run validators for each path. Return type is boolean
     static isModelValid(formModel, formModelValidators, stopOnFirstError) {
         stopOnFirstError = stopOnFirstError || false; // if provided TRUE, then validation stops on first error
         let valid = true;
 
-        // get paths of all fields that needed to be validated
+        // get paths of all paths that needed to be validated
         let validatorPaths = [];
         _.forOwn(formModelValidators, (fieldValue, fieldName, obj) => {
             if (typeof fieldValue !== 'function') {
@@ -158,10 +158,10 @@ export default class FormModelValidator {
         for (let pathIndex = 0; pathIndex < validatorPaths.length; pathIndex++) {
             let path = validatorPaths[pathIndex];
 
-            if (FormModelValidator.fieldNameIsArray(path)) {
-                // field name points to array. It means we need to loop array and validate each item of array
+            if (FormModelValidator.pathIsArray(path)) {
+                // path points to array. It means we need to loop array and validate each item of array
                 let arrayOfValidators = formModelValidators[path];
-                let arrInfo = FormModelValidator.parseFieldNameToArray(path);
+                let arrInfo = FormModelValidator.parsePathToArray(path);
 
                 // get array from form model. Each array item is meta or object with metas
                 let formModelArray = formModel[arrInfo.pathToArray];
@@ -185,7 +185,7 @@ export default class FormModelValidator {
                 });
 
             } else {
-                let result = FormModelValidator.isFieldValid(formModel, formModelValidators, path);
+                let result = FormModelValidator.isMetaValid(formModel, formModelValidators, path);
                 if (!result) {
                     valid = false;
                     if (stopOnFirstError === true)
@@ -218,44 +218,44 @@ export default class FormModelValidator {
         return false;
     }
 
-    // fieldName can contains "." Function split field name by dot and creates nested objects (after last dot is property name)
+    // path can contains "." Function split path by dot and creates nested objects (after last dot is property name)
     // example: contactInfo.address.city will result into.    
     // { contactInfo: { 
     //     address: { }
     // }
     // Warning: "city" will not be added to "address" object
-    static getOrCreateNestedObjects(json, fieldPath) {
-        var fields = fieldPath.split('.');
+    static getOrCreateNestedObjects(json, path) {
+        var parts = path.split('.');
         let nestedObject = json;
-        for (let fieldIndex = 0; fieldIndex < fields.length - 1; fieldIndex++) {
-            let field = fields[fieldIndex];
-            if (nestedObject.hasOwnProperty(field) === false)
-                nestedObject[field] = {};
-            nestedObject = nestedObject[field];
+        for (let partIndex = 0; partIndex < parts.length - 1; partIndex++) {
+            let part = parts[partIndex];
+            if (nestedObject.hasOwnProperty(part) === false)
+                nestedObject[part] = {};
+            nestedObject = nestedObject[part];
         }
         return nestedObject;
     }
 
-    // fieldName can contains "." Function split field name by dot and creates nested array
+    // path can contains "." Function split path by dot and creates nested array
     // example: contactInfo.labels will result into.
     // { contactInfo: { 
     //     labels: []
     // }
-    static getOrCreateNestedArray(json, fieldPath) {
-        var fields = fieldPath.split('.');
+    static getOrCreateNestedArray(json, path) {
+        var parts = path.split('.');
         let nestedObject = json;
         // loop path and build or get deepest object        
-        for (let fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
-            let field = fields[fieldIndex];
-            // if it is the last field in path, then create empty array
-            if (fieldIndex === fields.length - 1) {
-                if(typeof(nestedObject[field]) === 'undefined')
-                    nestedObject[field] = [];                
+        for (let partIndex = 0; partIndex < parts.length; partIndex++) {
+            let part = parts[partIndex];
+            // if it is the last part in path, then create empty array
+            if (partIndex === parts.length - 1) {
+                if(typeof(nestedObject[part]) === 'undefined')
+                    nestedObject[part] = [];                
             } else {
-                if (nestedObject.hasOwnProperty(field) === false)
-                    nestedObject[field] = {};
+                if (nestedObject.hasOwnProperty(part) === false)
+                    nestedObject[part] = {};
             }
-            nestedObject = nestedObject[field];
+            nestedObject = nestedObject[part];
         }        
         return nestedObject;
     }
@@ -270,15 +270,15 @@ export default class FormModelValidator {
         delete formModelCopy['_modelErrors'];
 
         let result = {};
-        _.forOwn(formModelCopy, (formModelFieldValue, formModelFieldName) => {
+        _.forOwn(formModelCopy, (formModelPathValue, formModelPath) => {
 
-            if (_.isArray(formModelFieldValue)) {
-                let arrayForJson = FormModelValidator.getOrCreateNestedArray(result, formModelFieldName);
+            if (_.isArray(formModelPathValue)) {
+                let arrayForJson = FormModelValidator.getOrCreateNestedArray(result, formModelPath);
 
-                formModelFieldValue.forEach((arrayItem) => {
+                formModelPathValue.forEach((arrayItem) => {
                     // if formModelValidators contains function that creates json, use it
-                    if (formModelValidators && typeof formModelValidators[`${formModelFieldName}[].getJSON`] === 'function') {
-                        let customJson = formModelValidators[`${formModelFieldName}[].getJSON`](arrayItem, formModelCopy);
+                    if (formModelValidators && typeof formModelValidators[`${formModelPath}[].getJSON`] === 'function') {
+                        let customJson = formModelValidators[`${formModelPath}[].getJSON`](arrayItem, formModelCopy);
                         if (customJson != null) {
                             arrayForJson.push(customJson);
                         }
@@ -294,9 +294,9 @@ export default class FormModelValidator {
                             };
 
                             // array item is not meta, now loop properties of object to find all metas
-                            _.forOwn(arrayItem, (arrayItemFieldValue, arrayItemFieldName) => {
-                                if (FormModelValidator.objectIsMeta(arrayItemFieldValue)) {
-                                    objectWithManyValues.value[arrayItemFieldName] = arrayItemFieldValue.value;
+                            _.forOwn(arrayItem, (arrayItemPathValue, arrayItemPath) => {
+                                if (FormModelValidator.objectIsMeta(arrayItemPathValue)) {
+                                    objectWithManyValues.value[arrayItemPath] = arrayItemPathValue.value;
                                 }
                             });
 
@@ -305,15 +305,15 @@ export default class FormModelValidator {
                     }
                 });
             }
-            else if (FormModelValidator.objectIsMeta(formModelFieldValue)) {
-                // split field name and create nested objects if necessary
-                if (formModelFieldName.indexOf('.') !== -1) {
-                    var fields = formModelFieldName.split('.');
-                    let nestedObject = FormModelValidator.getOrCreateNestedObjects(result, formModelFieldName);
-                    nestedObject[fields[fields.length - 1]] = formModelFieldValue.value;
+            else if (FormModelValidator.objectIsMeta(formModelPathValue)) {
+                // split path and create nested objects if necessary
+                if (formModelPath.indexOf('.') !== -1) {
+                    var parts = formModelPath.split('.');
+                    let nestedObject = FormModelValidator.getOrCreateNestedObjects(result, formModelPath);
+                    nestedObject[parts[parts.length - 1]] = formModelPathValue.value;
 
                 } else {
-                    result[formModelFieldName] = formModelFieldValue.value;
+                    result[formModelPath] = formModelPathValue.value;
                 }
             }
         });
@@ -356,16 +356,16 @@ export default class FormModelValidator {
         return errors;
     }
 
-    // function returns true if form model has errors (validators will not be run agains form model field)
+    // function returns true if form model has errors (validators will not be run agains form model paths)
     static hasExistingErrors(formModel) {
         let hasErrors = false;
-        _.forOwn(formModel, (formModelFieldValue, formModelFieldName) => {
+        _.forOwn(formModel, (formModelPathValue, formModelPath) => {
             if(hasErrors === true) {
                 return hasErrors;    
             }
-            if (_.isArray(formModelFieldValue)) {
+            if (_.isArray(formModelPathValue)) {
                 // this is array, loop array to get errors from array items
-                formModelFieldValue.forEach((arrayItem) => {
+                formModelPathValue.forEach((arrayItem) => {
                     if (FormModelValidator.objectIsMeta(arrayItem)) {
                         // array item is meta, get errors form that meta
                         if (arrayItem.errors && arrayItem.errors.length > 0) {
@@ -383,8 +383,8 @@ export default class FormModelValidator {
                         });
                     }
                 });
-            } else if (FormModelValidator.objectIsMeta(formModelFieldValue) || formModelFieldName === "_modelErrors") {
-                if (formModelFieldValue.errors && formModelFieldValue.errors.length > 0) {
+            } else if (FormModelValidator.objectIsMeta(formModelPathValue) || formModelPath === "_modelErrors") {
+                if (formModelPathValue.errors && formModelPathValue.errors.length > 0) {
                     hasErrors = true;
                 }
             }

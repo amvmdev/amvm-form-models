@@ -13,19 +13,18 @@
 ### Example of form model
 ```javascript
 export class PersonFormModel {
-    constructor(json) {
-        json = json || {};
+    constructor() {        
         'name.first': {
             title: 'First name',
             name: 'name.first',
-            value: 'John'
-            // errors field is missing, but it is still meta
+            value: 'John',
+            errors: []            
         },
         'name.last': {
             title: 'Last name',
             name: 'name.last',
             value: 'Brown',
-            errors: []
+            // errors field is missing, but it is still meta
         },
         'isAdult': {
             title: 'Is adult',
@@ -107,7 +106,7 @@ maxlength | This value will be set as `maxlength` attribute on `<input>` tag
 name | Value of name property is used for name atribute of input tag
 errors[] | Array of errors after running all validators against value property
 
-`labels` property is array. Each array item contains meta object with addition member called `key`.
+`labels` property is array. Each array item contains meta object with additional member called `key`.
 
 `emails` property is array. Each array item contains obejct with `key` property, and many meta objects. Thats why `name` property of each meta obejct has format of `emails[some_unique_key].%property_name%`
 
@@ -124,7 +123,7 @@ Resulting JSON will have following shape:
     age: 30,    
     labels: [ 'label_1', 'label_2'],
     emails: [ 
-        { type: 'Work', email: 'ohn@company.com' },
+        { type: 'Work', email: 'john@company.com' },
         { type: 'Personal', email: 'john@gmail.com' },
     ]
 }
@@ -199,25 +198,38 @@ Get meta object from `formModel` by path string.
 #### getValidatorsByPath(formModelValidators, path)
 Get array of validators for given path.
 
-#### fieldNameIsArray(fieldName)
-Returns true if field name points to array. Example of field name: `labels[some_unique_key]` **(!!! may be we should rename this method to pathIsArray(path)**
+#### pathIsArray(path)
+Returns true if path points to array. Example of path: `labels[some_unique_key]` 
 
-#### parseFieldNameToArray(fieldName)
-Takes field name (or path) that points to array, and returns following object:
+#### parsePathToArray(path)
+Takes path that points to array, and returns object with information about array and array meta. 
+
+Example of calling `parsePathToArray('labels[key2]')`:
 ```javascript
 {
-    itemKey: 'unique_key_of_array_item',
-    pathToArray: 'name_of_array_property_on_form_model',
-    arrayItemIsMeta: true if arrray item contains key and value properties only,
-    metaPropertyName: 'name of array item property that contains meta, if arrayItemIsMeta is false',
-    nameOfValidatorField: 'property name on validator class that responsible of validation array item meta '
+    itemKey: 'key2', //unique_key_of_array_item'
+    pathToArray: 'labels', //name_of_array_property_on_form_model
+    arrayItemIsMeta: true,  //true if arrray item is meta object and contains key property
+    metaPropertyName: null, //name of array item property that contains meta, if arrayItemIsMeta is false
+    nameOfValidatorField: 'labels[]' // property name on validator class that responsible of validation array item meta
+}
+```
+
+Example of calling `parsePathToArray('emails[key2].email')`:
+```javascript
+{
+    itemKey: 'key2', //unique_key_of_array_item'
+    pathToArray: 'emails', //name_of_array_property_on_form_model
+    arrayItemIsMeta: false,  //true if arrray item is meta object and contains key property
+    metaPropertyName: 'email', //name of array item property that contains meta, if arrayItemIsMeta is false
+    nameOfValidatorField: 'emails[].email' // property name on validator class that responsible of validation array item meta
 }
 ```
 
 #### getArrayIndexByKey(formModelArray, key)
 Returns index of array item that contains passed unique key
 
-#### isFieldValid(formModel, formModelValidators, fieldName)
+#### isMetaValid(formModel, formModelValidators, path)
 Function finds meta by path, and runs validators against meta's value. If validator returns false, we add errors message from validator to meta's errors array. Returns true if meta object is valid.
 
 #### isModelValid(formModel, formModelValidators, stopOnFirstError)
@@ -227,11 +239,10 @@ Function takes all validators and validates corresponding meta object in form mo
 Function takes errors as argument, and replaces errors in form model with passed errors object. `errors` is an object in following format:
 ```javascript
 {
-    'path_to_meta': [
-        'error message 1',
-        'error message 2'        
-    ],
-    // ... more properties
+    'name.first': ['error1', 'error2'], 
+    'name.last': ['error3', 'error4'],
+    'emails[key2].type': [ 'error 5' ],
+    'labels[key2]': [ 'error 6']
 }
 ```
 
@@ -239,7 +250,7 @@ Function takes errors as argument, and replaces errors in form model with passed
 #### objectIsMeta(obj) 
 Returns true if object has `value`, `errors` and `title` property.
 
-#### getOrCreateNestedObjects(json, fieldPath)
+#### getOrCreateNestedObjects(json, path)
 Function takes json object, and adds nested object by path. Function return deepest object created.
 
 Example:
@@ -255,7 +266,7 @@ Example:
 **Warning: city will not be added as object**
 
 
-#### getOrCreateNestedArray(json, fieldPath)
+#### getOrCreateNestedArray(json, path)
 Function takes json object, and adds array to json. Function returns created array.
 
 Example:

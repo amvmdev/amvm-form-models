@@ -125,12 +125,12 @@ module.exports =
 	});
 	
 	describe('Field name is array and get correct index by key', function () {
-	    it("FormModelValidator.fieldNameIsArray('labels[key1]') returns true", function () {
-	        _assert2.default.equal(_formModelValidator2.default.fieldNameIsArray('labels[key1]'), true);
+	    it("FormModelValidator.pathIsArray('labels[key1]') returns true", function () {
+	        _assert2.default.equal(_formModelValidator2.default.pathIsArray('labels[key1]'), true);
 	    });
 	
-	    it("FormModelValidator.fieldNameIsArray('emails[key1].email') returns true", function () {
-	        _assert2.default.equal(_formModelValidator2.default.fieldNameIsArray('emails[key1].email'), true);
+	    it("FormModelValidator.pathIsArray('emails[key1].email') returns true", function () {
+	        _assert2.default.equal(_formModelValidator2.default.pathIsArray('emails[key1].email'), true);
 	    });
 	
 	    it("FormModelValidator.getArrayIndex(personFormModel.emails, 'key1') returns index 0", function () {
@@ -162,8 +162,8 @@ module.exports =
 	        _assert2.default.equal(labelMeta.value, 'red');
 	    });
 	
-	    it("FormModelValidator.parseFieldNameToArray('labels[key2]') returns correct object", function () {
-	        var obj = _formModelValidator2.default.parseFieldNameToArray('labels[key2]');
+	    it("FormModelValidator.parsePathToArray('labels[key2]') returns correct object", function () {
+	        var obj = _formModelValidator2.default.parsePathToArray('labels[key2]');
 	        _assert2.default.equal(obj.itemKey, 'key2');
 	        _assert2.default.equal(obj.pathToArray, 'labels');
 	        _assert2.default.equal(obj.arrayItemIsMeta, true);
@@ -186,8 +186,8 @@ module.exports =
 	        _assert2.default.equal(typeMeta.value, 'john@gmail.com');
 	    });
 	
-	    it("FormModelValidator.parseFieldNameToArray('emails[key2].email') returns correct object", function () {
-	        var obj = _formModelValidator2.default.parseFieldNameToArray('emails[key2].email');
+	    it("FormModelValidator.parsePathToArray('emails[key2].email') returns correct object", function () {
+	        var obj = _formModelValidator2.default.parsePathToArray('emails[key2].email');
 	        _assert2.default.equal(obj.itemKey, 'key2');
 	        _assert2.default.equal(obj.pathToArray, 'emails');
 	        _assert2.default.equal(obj.arrayItemIsMeta, false);
@@ -198,18 +198,18 @@ module.exports =
 	
 	describe('Validating meta objects', function () {
 	
-	    it("isFieldValid(personFormModel, personFormModelValidators, 'name.first') is valid", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_personFormModel.personFormModel, personFormModelValidators, 'name.first');
+	    it("isMetaValid(personFormModel, personFormModelValidators, 'name.first') is valid", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'name.first');
 	        _assert2.default.equal(isValid, true);
 	    });
 	
-	    it("isFieldValid(personFormModel, personFormModelValidators, 'name.last') is valid", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_personFormModel.personFormModel, personFormModelValidators, 'name.last');
+	    it("isMetaValid(personFormModel, personFormModelValidators, 'name.last') is valid", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'name.last');
 	        _assert2.default.equal(isValid, true);
 	    });
 	
-	    it("isFieldValid(invalidPersonFormModel, personFormModelValidators, 'name.last') is not valid", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'name.last');
+	    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'name.last') is not valid", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'name.last');
 	        _assert2.default.equal(isValid, false);
 	    });
 	
@@ -224,7 +224,7 @@ module.exports =
 	        var lastNameMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'name.last');
 	        lastNameMeta.value = '1234567890';
 	
-	        var isValid = _formModelValidator2.default.isFieldValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'name.last');
+	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'name.last');
 	        _assert2.default.equal(lastNameMeta.errors.length, 1);
 	        _assert2.default.equal(lastNameMeta.errors[0], 'Last name cannot be 1234567890');
 	    });
@@ -232,41 +232,41 @@ module.exports =
 	
 	describe('Validating array of meta objects', function () {
 	
-	    it("isFieldValid(personFormModel, personFormModelValidators, 'labels[key1]') is valid", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_personFormModel.personFormModel, personFormModelValidators, 'labels[key1]');
+	    it("isMetaValid(personFormModel, personFormModelValidators, 'labels[key1]') is valid", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'labels[key1]');
 	        _assert2.default.equal(isValid, true);
 	    });
 	
-	    it("isFieldValid(personFormModel, personFormModelValidators, 'emails[key1].type') is valid and has no errors", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_personFormModel.personFormModel, personFormModelValidators, 'emails[key1].type');
+	    it("isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].type') is valid and has no errors", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'emails[key1].type');
 	        _assert2.default.equal(isValid, true);
 	        var typeMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'emails[key1].type');
 	        _assert2.default.equal(typeMeta.errors.length, 0);
 	    });
 	
-	    it("isFieldValid(personFormModel, personFormModelValidators, 'emails[key1].email') is valid and has no errors", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_personFormModel.personFormModel, personFormModelValidators, 'emails[key1].email');
+	    it("isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].email') is valid and has no errors", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'emails[key1].email');
 	        _assert2.default.equal(isValid, true);
 	        var emailMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'emails[key1].email');
 	        _assert2.default.equal(emailMeta.errors.length, 0);
 	    });
 	
-	    it("isFieldValid(invalidPersonFormModel, personFormModelValidators, 'labels[key3]') is not valid and has errors", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'labels[key3]');
+	    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'labels[key3]') is not valid and has errors", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'labels[key3]');
 	        _assert2.default.equal(isValid, false);
 	        var labelMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'labels[key3]');
 	        _assert2.default.equal(labelMeta.errors.length, 1);
 	    });
 	
-	    it("isFieldValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].type') is not valid and has errors", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'emails[key3].type');
+	    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].type') is not valid and has errors", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'emails[key3].type');
 	        _assert2.default.equal(isValid, false);
 	        var typeMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'emails[key3].type');
 	        _assert2.default.equal(typeMeta.errors.length, 1);
 	    });
 	
-	    it("isFieldValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].email') is not valid and has errors", function () {
-	        var isValid = _formModelValidator2.default.isFieldValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'emails[key3].email');
+	    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].email') is not valid and has errors", function () {
+	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'emails[key3].email');
 	        _assert2.default.equal(isValid, false);
 	        var emailMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'emails[key3].email');
 	        _assert2.default.equal(emailMeta.errors.length, 1);
@@ -477,10 +477,10 @@ module.exports =
 	        value: function getMetaByPath(formModel, path) {
 	            var meta = null;
 	
-	            if (FormModelValidator.fieldNameIsArray(path)) {
+	            if (FormModelValidator.pathIsArray(path)) {
 	                (function () {
 	                    // get info related to array of metas
-	                    var arrInfo = FormModelValidator.parseFieldNameToArray(path);
+	                    var arrInfo = FormModelValidator.parsePathToArray(path);
 	                    var array = formModel[arrInfo.pathToArray]; // this array contains metas or objects with metas
 	                    array.forEach(function (arrayItem) {
 	                        // skip looping if we already found meta by key
@@ -507,9 +507,9 @@ module.exports =
 	        key: 'getValidatorsByPath',
 	        value: function getValidatorsByPath(formModelValidators, path) {
 	            var validators = null;
-	            if (FormModelValidator.fieldNameIsArray(path)) {
+	            if (FormModelValidator.pathIsArray(path)) {
 	                // get info related to array of metas
-	                var arrInfo = FormModelValidator.parseFieldNameToArray(path);
+	                var arrInfo = FormModelValidator.parsePathToArray(path);
 	                validators = formModelValidators[arrInfo.nameOfValidatorField];
 	            } else {
 	                validators = _lodash2.default.get(formModelValidators, path);
@@ -518,19 +518,19 @@ module.exports =
 	            return validators;
 	        }
 	
-	        // returns true if fieldname points to array
+	        // returns true if path points to array
 	
 	    }, {
-	        key: 'fieldNameIsArray',
-	        value: function fieldNameIsArray(fieldName) {
-	            return fieldName.indexOf('[') !== -1;
+	        key: 'pathIsArray',
+	        value: function pathIsArray(path) {
+	            return path.indexOf('[') !== -1;
 	        }
 	
 	        // returns object with array paths and keys
 	
 	    }, {
-	        key: 'parseFieldNameToArray',
-	        value: function parseFieldNameToArray(fieldName) {
+	        key: 'parsePathToArray',
+	        value: function parsePathToArray(path) {
 	            var result = {
 	                itemKey: null,
 	                pathToArray: null,
@@ -539,15 +539,15 @@ module.exports =
 	                nameOfValidatorField: null
 	            };
 	
-	            var indexOfArrayOpen = fieldName.indexOf('[');
-	            var indexOfArrayClose = fieldName.indexOf(']');
-	            var arrayItemKey = fieldName.substring(indexOfArrayOpen + 1, indexOfArrayClose);
+	            var indexOfArrayOpen = path.indexOf('[');
+	            var indexOfArrayClose = path.indexOf(']');
+	            var arrayItemKey = path.substring(indexOfArrayOpen + 1, indexOfArrayClose);
 	
 	            result.itemKey = arrayItemKey;
-	            result.pathToArray = fieldName.substring(0, indexOfArrayOpen);
-	            result.nameOfValidatorField = fieldName.replace('[' + result.itemKey + ']', '[]');
-	            result.arrayItemIsMeta = fieldName.endsWith("]");
-	            if (result.arrayItemIsMeta === false) result.metaPropertyName = fieldName.substring(fieldName.indexOf("].") + 2);
+	            result.pathToArray = path.substring(0, indexOfArrayOpen);
+	            result.nameOfValidatorField = path.replace('[' + result.itemKey + ']', '[]');
+	            result.arrayItemIsMeta = path.endsWith("]");
+	            if (result.arrayItemIsMeta === false) result.metaPropertyName = path.substring(path.indexOf("].") + 2);
 	
 	            return result;
 	        }
@@ -555,15 +555,15 @@ module.exports =
 	        // validate meta object
 	
 	    }, {
-	        key: 'isFieldValid',
-	        value: function isFieldValid(formModel, formModelValidators, fieldName) {
+	        key: 'isMetaValid',
+	        value: function isMetaValid(formModel, formModelValidators, path) {
 	            var valid = true;
-	            // get validator for field of the model
-	            var validators = FormModelValidator.getValidatorsByPath(formModelValidators, fieldName);
+	            // get validator for path of the model
+	            var validators = FormModelValidator.getValidatorsByPath(formModelValidators, path);
 	            validators = validators || [];
 	
-	            // complex validation (not for specific field)
-	            if (fieldName === '_modelErrors') {
+	            // complex validation (not for specific path)
+	            if (path === '_modelErrors') {
 	                if (!formModel['_modelErrors']) formModel['_modelErrors'] = { errors: [] };else formModel['_modelErrors'].errors = [];
 	
 	                // run validator agains model value
@@ -598,11 +598,11 @@ module.exports =
 	                    }
 	                }
 	            } else {
-	                var meta = FormModelValidator.getMetaByPath(formModel, fieldName);
-	                // get form model value for field            
+	                var meta = FormModelValidator.getMetaByPath(formModel, path);
+	                // get form model value for path            
 	                if (!meta) {
-	                    console.error('FormModelValidator.isFieldValid: cannot find path of \'' + fieldName + '\' in form model. \n                Check form model and form model validators for matching keys');
-	                    return true; // just mark field as valid
+	                    console.error('FormModelValidator.isMetaValid: cannot find path of \'' + path + '\' in form model. \n                Check form model and form model validators for matching keys');
+	                    return true; // just mark meta as valid
 	                }
 	
 	                // clear previous errors
@@ -642,7 +642,7 @@ module.exports =
 	            return valid;
 	        }
 	
-	        // function loop all fields and run validators for each field. Return type is boolean
+	        // function loop all paths and run validators for each path. Return type is boolean
 	
 	    }, {
 	        key: 'isModelValid',
@@ -650,7 +650,7 @@ module.exports =
 	            stopOnFirstError = stopOnFirstError || false; // if provided TRUE, then validation stops on first error
 	            var valid = true;
 	
-	            // get paths of all fields that needed to be validated
+	            // get paths of all paths that needed to be validated
 	            var validatorPaths = [];
 	            _lodash2.default.forOwn(formModelValidators, function (fieldValue, fieldName, obj) {
 	                if (typeof fieldValue !== 'function') {
@@ -662,11 +662,11 @@ module.exports =
 	            for (var pathIndex = 0; pathIndex < validatorPaths.length; pathIndex++) {
 	                var path = validatorPaths[pathIndex];
 	
-	                if (FormModelValidator.fieldNameIsArray(path)) {
+	                if (FormModelValidator.pathIsArray(path)) {
 	                    (function () {
-	                        // field name points to array. It means we need to loop array and validate each item of array
+	                        // path points to array. It means we need to loop array and validate each item of array
 	                        var arrayOfValidators = formModelValidators[path];
-	                        var arrInfo = FormModelValidator.parseFieldNameToArray(path);
+	                        var arrInfo = FormModelValidator.parsePathToArray(path);
 	
 	                        // get array from form model. Each array item is meta or object with metas
 	                        var formModelArray = formModel[arrInfo.pathToArray];
@@ -708,7 +708,7 @@ module.exports =
 	                        });
 	                    })();
 	                } else {
-	                    var result = FormModelValidator.isFieldValid(formModel, formModelValidators, path);
+	                    var result = FormModelValidator.isMetaValid(formModel, formModelValidators, path);
 	                    if (!result) {
 	                        valid = false;
 	                        if (stopOnFirstError === true) break;
@@ -746,7 +746,7 @@ module.exports =
 	            return false;
 	        }
 	
-	        // fieldName can contains "." Function split field name by dot and creates nested objects (after last dot is property name)
+	        // path can contains "." Function split path by dot and creates nested objects (after last dot is property name)
 	        // example: contactInfo.address.city will result into.    
 	        // { contactInfo: { 
 	        //     address: { }
@@ -755,18 +755,18 @@ module.exports =
 	
 	    }, {
 	        key: 'getOrCreateNestedObjects',
-	        value: function getOrCreateNestedObjects(json, fieldPath) {
-	            var fields = fieldPath.split('.');
+	        value: function getOrCreateNestedObjects(json, path) {
+	            var parts = path.split('.');
 	            var nestedObject = json;
-	            for (var fieldIndex = 0; fieldIndex < fields.length - 1; fieldIndex++) {
-	                var field = fields[fieldIndex];
-	                if (nestedObject.hasOwnProperty(field) === false) nestedObject[field] = {};
-	                nestedObject = nestedObject[field];
+	            for (var partIndex = 0; partIndex < parts.length - 1; partIndex++) {
+	                var part = parts[partIndex];
+	                if (nestedObject.hasOwnProperty(part) === false) nestedObject[part] = {};
+	                nestedObject = nestedObject[part];
 	            }
 	            return nestedObject;
 	        }
 	
-	        // fieldName can contains "." Function split field name by dot and creates nested array
+	        // path can contains "." Function split path by dot and creates nested array
 	        // example: contactInfo.labels will result into.
 	        // { contactInfo: { 
 	        //     labels: []
@@ -774,19 +774,19 @@ module.exports =
 	
 	    }, {
 	        key: 'getOrCreateNestedArray',
-	        value: function getOrCreateNestedArray(json, fieldPath) {
-	            var fields = fieldPath.split('.');
+	        value: function getOrCreateNestedArray(json, path) {
+	            var parts = path.split('.');
 	            var nestedObject = json;
 	            // loop path and build or get deepest object        
-	            for (var fieldIndex = 0; fieldIndex < fields.length; fieldIndex++) {
-	                var field = fields[fieldIndex];
-	                // if it is the last field in path, then create empty array
-	                if (fieldIndex === fields.length - 1) {
-	                    if (typeof nestedObject[field] === 'undefined') nestedObject[field] = [];
+	            for (var partIndex = 0; partIndex < parts.length; partIndex++) {
+	                var part = parts[partIndex];
+	                // if it is the last part in path, then create empty array
+	                if (partIndex === parts.length - 1) {
+	                    if (typeof nestedObject[part] === 'undefined') nestedObject[part] = [];
 	                } else {
-	                    if (nestedObject.hasOwnProperty(field) === false) nestedObject[field] = {};
+	                    if (nestedObject.hasOwnProperty(part) === false) nestedObject[part] = {};
 	                }
-	                nestedObject = nestedObject[field];
+	                nestedObject = nestedObject[part];
 	            }
 	            return nestedObject;
 	        }
@@ -804,16 +804,16 @@ module.exports =
 	            delete formModelCopy['_modelErrors'];
 	
 	            var result = {};
-	            _lodash2.default.forOwn(formModelCopy, function (formModelFieldValue, formModelFieldName) {
+	            _lodash2.default.forOwn(formModelCopy, function (formModelPathValue, formModelPath) {
 	
-	                if (_lodash2.default.isArray(formModelFieldValue)) {
+	                if (_lodash2.default.isArray(formModelPathValue)) {
 	                    (function () {
-	                        var arrayForJson = FormModelValidator.getOrCreateNestedArray(result, formModelFieldName);
+	                        var arrayForJson = FormModelValidator.getOrCreateNestedArray(result, formModelPath);
 	
-	                        formModelFieldValue.forEach(function (arrayItem) {
+	                        formModelPathValue.forEach(function (arrayItem) {
 	                            // if formModelValidators contains function that creates json, use it
-	                            if (formModelValidators && typeof formModelValidators[formModelFieldName + '[].getJSON'] === 'function') {
-	                                var customJson = formModelValidators[formModelFieldName + '[].getJSON'](arrayItem, formModelCopy);
+	                            if (formModelValidators && typeof formModelValidators[formModelPath + '[].getJSON'] === 'function') {
+	                                var customJson = formModelValidators[formModelPath + '[].getJSON'](arrayItem, formModelCopy);
 	                                if (customJson != null) {
 	                                    arrayForJson.push(customJson);
 	                                }
@@ -829,9 +829,9 @@ module.exports =
 	                                        };
 	
 	                                        // array item is not meta, now loop properties of object to find all metas
-	                                        _lodash2.default.forOwn(arrayItem, function (arrayItemFieldValue, arrayItemFieldName) {
-	                                            if (FormModelValidator.objectIsMeta(arrayItemFieldValue)) {
-	                                                objectWithManyValues.value[arrayItemFieldName] = arrayItemFieldValue.value;
+	                                        _lodash2.default.forOwn(arrayItem, function (arrayItemPathValue, arrayItemPath) {
+	                                            if (FormModelValidator.objectIsMeta(arrayItemPathValue)) {
+	                                                objectWithManyValues.value[arrayItemPath] = arrayItemPathValue.value;
 	                                            }
 	                                        });
 	
@@ -841,14 +841,14 @@ module.exports =
 	                            }
 	                        });
 	                    })();
-	                } else if (FormModelValidator.objectIsMeta(formModelFieldValue)) {
-	                    // split field name and create nested objects if necessary
-	                    if (formModelFieldName.indexOf('.') !== -1) {
-	                        var fields = formModelFieldName.split('.');
-	                        var nestedObject = FormModelValidator.getOrCreateNestedObjects(result, formModelFieldName);
-	                        nestedObject[fields[fields.length - 1]] = formModelFieldValue.value;
+	                } else if (FormModelValidator.objectIsMeta(formModelPathValue)) {
+	                    // split path and create nested objects if necessary
+	                    if (formModelPath.indexOf('.') !== -1) {
+	                        var parts = formModelPath.split('.');
+	                        var nestedObject = FormModelValidator.getOrCreateNestedObjects(result, formModelPath);
+	                        nestedObject[parts[parts.length - 1]] = formModelPathValue.value;
 	                    } else {
-	                        result[formModelFieldName] = formModelFieldValue.value;
+	                        result[formModelPath] = formModelPathValue.value;
 	                    }
 	                }
 	            });
@@ -894,19 +894,19 @@ module.exports =
 	            return errors;
 	        }
 	
-	        // function returns true if form model has errors (validators will not be run agains form model field)
+	        // function returns true if form model has errors (validators will not be run agains form model paths)
 	
 	    }, {
 	        key: 'hasExistingErrors',
 	        value: function hasExistingErrors(formModel) {
 	            var hasErrors = false;
-	            _lodash2.default.forOwn(formModel, function (formModelFieldValue, formModelFieldName) {
+	            _lodash2.default.forOwn(formModel, function (formModelPathValue, formModelPath) {
 	                if (hasErrors === true) {
 	                    return hasErrors;
 	                }
-	                if (_lodash2.default.isArray(formModelFieldValue)) {
+	                if (_lodash2.default.isArray(formModelPathValue)) {
 	                    // this is array, loop array to get errors from array items
-	                    formModelFieldValue.forEach(function (arrayItem) {
+	                    formModelPathValue.forEach(function (arrayItem) {
 	                        if (FormModelValidator.objectIsMeta(arrayItem)) {
 	                            // array item is meta, get errors form that meta
 	                            if (arrayItem.errors && arrayItem.errors.length > 0) {
@@ -924,8 +924,8 @@ module.exports =
 	                            });
 	                        }
 	                    });
-	                } else if (FormModelValidator.objectIsMeta(formModelFieldValue) || formModelFieldName === "_modelErrors") {
-	                    if (formModelFieldValue.errors && formModelFieldValue.errors.length > 0) {
+	                } else if (FormModelValidator.objectIsMeta(formModelPathValue) || formModelPath === "_modelErrors") {
+	                    if (formModelPathValue.errors && formModelPathValue.errors.length > 0) {
 	                        hasErrors = true;
 	                    }
 	                }
@@ -18139,7 +18139,6 @@ module.exports =
 	        value: 'blue',
 	        errors: []
 	    }]
-	
 	};
 
 /***/ },
@@ -18245,7 +18244,7 @@ module.exports =
 	        validator: function validator(value, formModel) {
 	            return value == "Work" || value == "Personal";
 	        },
-	        errorMessage: 'Type of email can only be Work'
+	        errorMessage: 'Type of email can only be Work or Personal'
 	    }], this['emails[].email'] = [{
 	        validator: function validator(value, formModel) {
 	            return value.indexOf('@temp.com') == -1;

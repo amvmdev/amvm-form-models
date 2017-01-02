@@ -78,22 +78,5 @@ export const personFormModel = {
             value: 'blue',
             errors: []
         }
-    ],
-
-    // tags: [
-    //     {
-    //         key: 'key1',
-    //         title: 'Tag',
-    //         name: 'tags[key1]',
-    //         value: 'big tag',
-    //         errors: []
-    //     },
-    //     {
-    //         key: 'key2',
-    //         title: 'Tag',
-    //         name: 'tags[key2]',
-    //         value: 'small tag',
-    //         errors: []
-    //     }
-    // ]
+    ]    
 }

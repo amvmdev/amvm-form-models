@@ -32,7 +32,7 @@ export class PersonFormModelValidators {
         this['emails[].type'] = [
             {
                 validator: (value, formModel) => value == "Work" || value == "Personal",
-                errorMessage: 'Type of email can only be Work'
+                errorMessage: 'Type of email can only be Work or Personal'
             }            
         ],
         this['emails[].email'] = [

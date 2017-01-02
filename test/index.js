@@ -62,12 +62,12 @@ describe('Retrieving meta object', function () {
 
 
 describe('Field name is array and get correct index by key', function () {
-    it("FormModelValidator.fieldNameIsArray('labels[key1]') returns true", function () {
-        assert.equal(FormModelValidator.fieldNameIsArray('labels[key1]'), true);
+    it("FormModelValidator.pathIsArray('labels[key1]') returns true", function () {
+        assert.equal(FormModelValidator.pathIsArray('labels[key1]'), true);
     });
 
-    it("FormModelValidator.fieldNameIsArray('emails[key1].email') returns true", function () {
-        assert.equal(FormModelValidator.fieldNameIsArray('emails[key1].email'), true);
+    it("FormModelValidator.pathIsArray('emails[key1].email') returns true", function () {
+        assert.equal(FormModelValidator.pathIsArray('emails[key1].email'), true);
     });
 
     it("FormModelValidator.getArrayIndex(personFormModel.emails, 'key1') returns index 0", function () {
@@ -101,8 +101,8 @@ describe('Array of single meta objects', function () {
         assert.equal(labelMeta.value, 'red');
     });
 
-    it("FormModelValidator.parseFieldNameToArray('labels[key2]') returns correct object", function () {
-        const obj = FormModelValidator.parseFieldNameToArray('labels[key2]');
+    it("FormModelValidator.parsePathToArray('labels[key2]') returns correct object", function () {
+        const obj = FormModelValidator.parsePathToArray('labels[key2]');
         assert.equal(obj.itemKey, 'key2');
         assert.equal(obj.pathToArray, 'labels');
         assert.equal(obj.arrayItemIsMeta, true);
@@ -125,8 +125,8 @@ describe('Array of multiple meta objects', function () {
         assert.equal(typeMeta.value, 'john@gmail.com');
     });
 
-    it("FormModelValidator.parseFieldNameToArray('emails[key2].email') returns correct object", function () {
-        const obj = FormModelValidator.parseFieldNameToArray('emails[key2].email');
+    it("FormModelValidator.parsePathToArray('emails[key2].email') returns correct object", function () {
+        const obj = FormModelValidator.parsePathToArray('emails[key2].email');
         assert.equal(obj.itemKey, 'key2');
         assert.equal(obj.pathToArray, 'emails');
         assert.equal(obj.arrayItemIsMeta, false);
@@ -139,18 +139,18 @@ describe('Array of multiple meta objects', function () {
 
 describe('Validating meta objects', function () {
 
-    it("isFieldValid(personFormModel, personFormModelValidators, 'name.first') is valid", function () {
-        const isValid = FormModelValidator.isFieldValid(personFormModel, personFormModelValidators, 'name.first');
+    it("isMetaValid(personFormModel, personFormModelValidators, 'name.first') is valid", function () {
+        const isValid = FormModelValidator.isMetaValid(personFormModel, personFormModelValidators, 'name.first');
         assert.equal(isValid, true);
     });
 
-    it("isFieldValid(personFormModel, personFormModelValidators, 'name.last') is valid", function () {
-        const isValid = FormModelValidator.isFieldValid(personFormModel, personFormModelValidators, 'name.last');
+    it("isMetaValid(personFormModel, personFormModelValidators, 'name.last') is valid", function () {
+        const isValid = FormModelValidator.isMetaValid(personFormModel, personFormModelValidators, 'name.last');
         assert.equal(isValid, true);
     });
 
-    it("isFieldValid(invalidPersonFormModel, personFormModelValidators, 'name.last') is not valid", function () {
-        const isValid = FormModelValidator.isFieldValid(invalidPersonFormModel, personFormModelValidators, 'name.last');
+    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'name.last') is not valid", function () {
+        const isValid = FormModelValidator.isMetaValid(invalidPersonFormModel, personFormModelValidators, 'name.last');
         assert.equal(isValid, false);
     });
 
@@ -165,7 +165,7 @@ describe('Validating meta objects', function () {
         const lastNameMeta = FormModelValidator.getMetaByPath(invalidPersonFormModel, 'name.last');
         lastNameMeta.value = '1234567890';
 
-        const isValid = FormModelValidator.isFieldValid(invalidPersonFormModel, personFormModelValidators, 'name.last');
+        const isValid = FormModelValidator.isMetaValid(invalidPersonFormModel, personFormModelValidators, 'name.last');
         assert.equal(lastNameMeta.errors.length, 1);
         assert.equal(lastNameMeta.errors[0], 'Last name cannot be 1234567890');
     });
@@ -175,41 +175,41 @@ describe('Validating meta objects', function () {
 
 describe('Validating array of meta objects', function () {
 
-    it("isFieldValid(personFormModel, personFormModelValidators, 'labels[key1]') is valid", function () {
-        const isValid = FormModelValidator.isFieldValid(personFormModel, personFormModelValidators, 'labels[key1]');
+    it("isMetaValid(personFormModel, personFormModelValidators, 'labels[key1]') is valid", function () {
+        const isValid = FormModelValidator.isMetaValid(personFormModel, personFormModelValidators, 'labels[key1]');
         assert.equal(isValid, true);
     });    
 
-    it("isFieldValid(personFormModel, personFormModelValidators, 'emails[key1].type') is valid and has no errors", function () {
-        const isValid = FormModelValidator.isFieldValid(personFormModel, personFormModelValidators, 'emails[key1].type');
+    it("isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].type') is valid and has no errors", function () {
+        const isValid = FormModelValidator.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].type');
         assert.equal(isValid, true);
         const typeMeta = FormModelValidator.getMetaByPath(personFormModel, 'emails[key1].type');
         assert.equal(typeMeta.errors.length, 0);
     });
 
-    it("isFieldValid(personFormModel, personFormModelValidators, 'emails[key1].email') is valid and has no errors", function () {
-        const isValid = FormModelValidator.isFieldValid(personFormModel, personFormModelValidators, 'emails[key1].email');
+    it("isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].email') is valid and has no errors", function () {
+        const isValid = FormModelValidator.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].email');
         assert.equal(isValid, true);
         const emailMeta = FormModelValidator.getMetaByPath(personFormModel, 'emails[key1].email');
         assert.equal(emailMeta.errors.length, 0);
     });
 
-    it("isFieldValid(invalidPersonFormModel, personFormModelValidators, 'labels[key3]') is not valid and has errors", function () {
-        const isValid = FormModelValidator.isFieldValid(invalidPersonFormModel, personFormModelValidators, 'labels[key3]');
+    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'labels[key3]') is not valid and has errors", function () {
+        const isValid = FormModelValidator.isMetaValid(invalidPersonFormModel, personFormModelValidators, 'labels[key3]');
         assert.equal(isValid, false);
         const labelMeta = FormModelValidator.getMetaByPath(invalidPersonFormModel, 'labels[key3]');
         assert.equal(labelMeta.errors.length, 1);
     });
 
-    it("isFieldValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].type') is not valid and has errors", function () {
-        const isValid = FormModelValidator.isFieldValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].type');
+    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].type') is not valid and has errors", function () {
+        const isValid = FormModelValidator.isMetaValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].type');
         assert.equal(isValid, false);
         const typeMeta = FormModelValidator.getMetaByPath(invalidPersonFormModel, 'emails[key3].type');
         assert.equal(typeMeta.errors.length, 1);
     });
 
-    it("isFieldValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].email') is not valid and has errors", function () {
-        const isValid = FormModelValidator.isFieldValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].email');
+    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].email') is not valid and has errors", function () {
+        const isValid = FormModelValidator.isMetaValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].email');
         assert.equal(isValid, false);
         const emailMeta = FormModelValidator.getMetaByPath(invalidPersonFormModel, 'emails[key3].email');
         assert.equal(emailMeta.errors.length, 1);
