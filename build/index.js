@@ -20686,8 +20686,14 @@ module.exports =
 	        delete fullModelJson._id; // if we don't delete _id, new record will be created with empty _id
 	
 	        // Important! - create meta property on json that points to who is owning this data!!!
+	        // Also get additional info
+	        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	        var userAgent = req.headers['user-agent'];
 	        fullModelJson.meta = {
-	            ownerId: httpRequest.user._id
+	            ownerId: httpRequest.user._id,
+	            createdOn: Date.now(),
+	            ip: ip,
+	            userAgent: userAgent
 	        };
 	
 	        // Finally, after all checks, we return json on full model with meta data added to it            
@@ -20737,6 +20743,15 @@ module.exports =
 	
 	        delete fullModelJson.meta; // delete meta in case it exists
 	        delete fullModelJson._id; // if we don't delete _id, new record will be created with empty _id
+	
+	        // get info about client
+	        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	        var userAgent = req.headers['user-agent'];
+	        fullModelJson.meta = {
+	            createdOn: Date.now(),
+	            ip: ip,
+	            userAgent: userAgent
+	        };
 	
 	        // Finally, after all checks, we return json on full model with meta data added to it            
 	        result.json = fullModelJson;
