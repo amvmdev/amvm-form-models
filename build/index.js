@@ -20687,8 +20687,8 @@ module.exports =
 	
 	        // Important! - create meta property on json that points to who is owning this data!!!
 	        // Also get additional info
-	        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	        var userAgent = req.headers['user-agent'];
+	        var ip = httpRequest.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	        var userAgent = httpRequest.headers['user-agent'];
 	        fullModelJson.meta = {
 	            ownerId: httpRequest.user._id,
 	            createdOn: Date.now(),
@@ -20704,7 +20704,7 @@ module.exports =
 	    return result;
 	}
 	
-	function createFullModelAnon(json, fnFormModel, fnFormModelValidators, fnFullModel) {
+	function createFullModelAnon(json, fnFormModel, fnFormModelValidators, fnFullModel, httpRequest) {
 	    /*
 	    {   
 	        isValid: true if we can validate json
@@ -20745,8 +20745,12 @@ module.exports =
 	        delete fullModelJson._id; // if we don't delete _id, new record will be created with empty _id
 	
 	        // get info about client
-	        var ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	        var userAgent = req.headers['user-agent'];
+	        var ip = '';
+	        var userAgent = '';
+	        if (httpRequest) {
+	            ip = httpRequest.headers['x-forwarded-for'] || httpRequest.connection.remoteAddress;
+	            userAgent = httpRequest.headers['user-agent'];
+	        }
 	        fullModelJson.meta = {
 	            createdOn: Date.now(),
 	            ip: ip,
