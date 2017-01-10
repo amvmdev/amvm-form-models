@@ -20687,7 +20687,7 @@ module.exports =
 	
 	        // Important! - create meta property on json that points to who is owning this data!!!
 	        // Also get additional info
-	        var ip = httpRequest.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	        var ip = httpRequest.headers['x-forwarded-for'] || httpRequest.connection.remoteAddress;
 	        var userAgent = httpRequest.headers['user-agent'];
 	        fullModelJson.meta = {
 	            ownerId: httpRequest.user._id,
