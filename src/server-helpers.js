@@ -44,7 +44,7 @@ export function createFullModel(json, fnFormModel, fnFormModelValidators, fnFull
 
         // Important! - create meta property on json that points to who is owning this data!!!
         // Also get additional info
-        const ip = httpRequest.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const ip = httpRequest.headers['x-forwarded-for'] || httpRequest.connection.remoteAddress;
         const userAgent = httpRequest.headers['user-agent'];
         fullModelJson.meta = {
             ownerId: httpRequest.user._id,
