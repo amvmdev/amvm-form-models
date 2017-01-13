@@ -26,6 +26,16 @@ export class PersonFormModel {
             value: 'Brown',
             // errors field is missing, but it is still meta
         },
+        'gender': {
+            value: 'male',
+            title: 'Gender',
+            name: 'gender',
+            dropdownValues: [
+                { value: 'set-null', text: 'Select gender'},
+                { value: 'male', text: 'Male'},
+                { value: 'female', text: 'Female'}
+            ]
+        },        
         'isAdult': {
             title: 'Is adult',
             name: 'isAdult',
@@ -101,10 +111,11 @@ Property | Description
 --- | ---
 value | This property will contain value for meta object
 title | Title of meta object. Usually value of title is used inside `<label>` 
-required | If set to true, `<label>` tag will display *
+required | If set to true, `<label>` tag will display 
 maxlength | This value will be set as `maxlength` attribute on `<input>` tag
 name | Value of name property is used for name atribute of input tag
 errors[] | Array of errors after running all validators against value property
+dropdownValues | Array of object. Each object should have `value` and `text` property. This array can be used to build dropdown with these values.
 
 `labels` property is array. Each array item contains meta object with additional member called `key`.
 
@@ -184,7 +195,32 @@ export class PersonFormModelValidators {
                 validator: (formModel) => formModel.emails.length <= 2,
                 errorMessage: 'Maximum 1 email allowed'
             }
-        ]
+        ],
+        
+        // function that creates part of final json.
+        this["emails[].getJSON"] = function (arrayItem) {
+            if (arrayItem.email.value === "") {
+                return null;
+            } else {
+                return {
+                    key: arrayItem.key,
+                    value: {
+                        email: arrayItem.email.value,
+                        type: arrayItem.type.value
+                    }
+                }
+            }
+        },
+        this["labels[].getJSON"] = function (arrayItem) {
+            if (arrayItem.value === "") {
+                return null;
+            } else {
+                return {
+                    key: arrayItem.key,
+                    value: arrayItem.value
+                }
+            }
+        }
     }
 }
 ```
