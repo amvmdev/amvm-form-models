@@ -2,55 +2,163 @@ export class PersonFormModelValidators {
     constructor() {
         this['name.first'] = [
             {
-                validator: (value, formModel) => value.length < 10,
-                errorMessage: 'First name must be less than 10 characters'
+                validator: (value, formModel) => value.indexOf('error') === -1,
+                message: 'this is error for name.first',
+                type: 'error'
             },
             {
-                validator: (value, formModel) => value && value.length > 0,
-                errorMessage: 'First name is required'
+                validator: (value, formModel) => value.indexOf('error') === -1,
+                message: 'this is error for name.first (duplicate)',
+                type: 'error'
+            },
+            {
+                validator: (value, formModel) => value.indexOf('warning') === -1,
+                message: 'this is warning for name.first',
+                type: 'warning'
+            },
+            {
+                validator: (value, formModel) => value.indexOf('info') === -1,
+                message: (value) => `this is info for name.first`,
+                type: 'info'
             }
         ],
 
         this['name.last'] = [
             {
-                validator: (value, formModel) => value && value.length > 0,
-                errorMessage: 'Last name is required'
+                validator: (value, formModel) => value.indexOf('error') === -1,
+                message: 'this is error for name.last',
+                type: 'error'
             },
             {
-                validator: (value, formModel) => value != '1234567890',
-                errorMessage: 'Last name cannot be 1234567890'
-            }           
+                validator: (value, formModel) => value.indexOf('warning') === -1,
+                message: 'this is warning for name.last',
+                type: 'warning'
+            },
+            {
+                validator: (value, formModel) => value.indexOf('info') === -1,
+                message: (value) => `this is info for name.last`,
+                type: 'info'
+            }     
+        ],
+
+        this['age'] = [
+            {
+                validator: (value, formModel) => value != 1,
+                message: 'this is error for name.last',
+                type: 'error'
+            },
+            {
+                validator: (value, formModel) => value != 2,
+                message: 'this is warning for name.last',
+                type: 'warning'
+            },
+            {
+                validator: (value, formModel) => value != 3,
+                message: (value) => `this is info for name.last`,
+                type: 'info'
+            }     
         ]
+
 
         this['labels[]'] = [
             {
-                validator: (value, formModel) => value.length < 5,
-                errorMessage: 'Label must be less than 5 characters'
-            }            
+                validator: (value, formModel) => value.indexOf('error') === -1,
+                message: 'this is error for label',
+                type: 'error'
+            },
+            {
+                validator: (value, formModel) => value.indexOf('warning') === -1,
+                message: 'this is warning for label',
+                type: 'warning'
+            },
+            {
+                validator: (value, formModel) => value.indexOf('info') === -1,
+                message: 'this is info for label',
+                type: 'info'
+            }     
         ]
 
         this['emails[].type'] = [
             {
-                validator: (value, formModel) => value == "Work" || value == "Personal",
-                errorMessage: 'Type of email can only be Work or Personal'
-            }            
+                validator: (value, formModel) => value.indexOf('error') === -1,
+                message: 'this is error for emails[].type',
+                type: 'error'
+            },
+            {
+                validator: (value, formModel) => value.indexOf('warning') === -1,
+                message: 'this is warning for emails[].type',
+                type: 'warning'
+            },
+            {
+                validator: (value, formModel) => value.indexOf('info') === -1,
+                message: 'this is info for emails[].type',
+                type: 'info'
+            }             
         ],
         this['emails[].email'] = [
             {
-                validator: (value, formModel) => value.indexOf('@temp.com') == -1,
-                errorMessage: 'gmail.com is not allowed'
-            }            
-        ],
-        
-        this._modelErrors = [
-            {
-                validator: (formModel) => formModel.labels.length <= 2,
-                errorMessage: 'Maximum 2 labels allowed'
+                validator: (value, formModel) => value.indexOf('error') === -1,
+                message: 'this is error for emails[].email',
+                type: 'error'
             },
             {
-                validator: (formModel) => formModel.emails.length <= 2,
-                errorMessage: 'Maximum 1 email allowed'
+                validator: (value, formModel) => value.indexOf('warning') === -1,
+                message: 'this is warning for emails[].email',
+                type: 'warning'
+            },
+            {
+                validator: (value, formModel) => value.indexOf('info') === -1,
+                message: 'this is info for emails[].email',
+                type: 'info'
+            }
+        ],
+
+        this['_model'] = [
+            {
+                validator: (formModel) => formModel['name.first'].value.indexOf('meta_err') === -1,
+                message: 'this is error for _model',
+                type: 'error'
+            },
+            {
+                validator: (formModel) => formModel['name.first'].value.indexOf('meta_err') === -1,
+                message: 'this is error for _model (duplicate)',
+                type: 'error'
+            },
+            {
+                validator: (formModel) => formModel['name.first'].value.indexOf('meta_warn') === -1,
+                message: 'this is warning for _model',
+                type: 'warning'
+            },
+            {
+                validator: (formModel) => formModel['name.first'].value.indexOf('meta_inf') === -1,
+                message: 'this is info for _model',
+                type: 'info'
             }
         ]
+
+        // uncomment to have custom json creator for labels array
+        // this['labels[].getJSON'] = (arrayItem, formModel) => {
+        //     return {
+        //         key: arrayItem.key,
+        //         value: arrayItem.value
+        //     }
+        // }
+
+        // uncomment to have custom json creator for emails array
+        // this['emails[].getJSON'] = (arrayItem, formModel) => {
+        //     return {
+        //         key: arrayItem.key,
+        //         value: {
+        //             type: arrayItem.type.value,
+        //             email: arrayItem.email.value
+        //         }
+        //     }
+        // }
+
+        // uncomment to have custom value for json's name.first path
+        // this['name.first.getJSON'] = (meta, formModel) => {
+        //     return meta.value
+        // }
+
     }
 }

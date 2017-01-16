@@ -38,7 +38,7 @@ export default class FormModelValidator {
             });
 
             // if variable meta is not actual meta, set it to undefined;
-            if(!FormModelValidator.objectIsMeta(meta)) 
+            if (!FormModelValidator.objectIsMeta(meta))
                 meta = undefined;
 
         } else {
@@ -99,20 +99,58 @@ export default class FormModelValidator {
         validators = validators || [];
 
         // complex validation (not for specific path)
-        if (path === '_modelErrors') {
-            if (!formModel['_modelErrors'])
-                formModel['_modelErrors'] = { errors: [] };
-            else
-                formModel['_modelErrors'].errors = [];
+        if (path === '_model') {
+
+            if (!formModel['_model']) {
+                formModel['_model'] = { errors: [], warnings: [], infos: [] };
+            } else {
+                formModel['_model'].errors = [];
+                formModel['_model'].warnings = [];
+                formModel['_model'].infos = [];
+            }
 
             // run validator agains model value
             for (let validatorItem of validators) {
-                let result = validatorItem.validator(formModel); // Note: for complex validation, there is single argument - FormModel
+                let result;
+                try {
+                    result = validatorItem.validator(formModel); // Note: for complex validation, there is single argument - FormModel
+                } catch (err) {
+                    console.error(`\nError while running validator for '_model'`);
+                    console.error(err);
+                }
 
-                if (result !== true) {
-                    valid = false;
-                    formModel['_modelErrors'].errors.push(validatorItem.errorMessage);
-                    break;
+                if (result === false) {
+                    let message = null;
+                    if (typeof (validatorItem.message) === 'string') {
+                        message = validatorItem.message;
+                    } else if (typeof (validatorItem.message) === 'function') {
+                        message = validatorItem.message(meta.value, formModel);
+                    }
+                    else {
+                        console.error('Validator\'s message property is not string or function.');
+                    }
+
+                    // add message to corresponding array
+                    if (message != null) {
+                        if (validatorItem.type === 'error') {
+                            formModel['_model'].errors.push(message);
+                            valid = false;
+                        }
+                        else if (validatorItem.type === 'info')
+                            formModel['_model'].infos.push(message);
+                        else if (validatorItem.type === 'warning')
+                            formModel['_model'].warnings.push(message);
+                        else {
+                            valid = false;
+                            formModel['_model'].errors.push(message); // if type is not set, treat is as error
+                            console.warn(`Validator for '_model' is missing type property.`);
+                        }
+                    }
+                }
+
+                // if validator returned something other than boolean, log it to console
+                if (typeof (result) !== 'boolean') {
+                    console.error(`Validator returned result of type ${typeof (result)} for '_model'`);
                 }
             }
 
@@ -127,14 +165,64 @@ export default class FormModelValidator {
 
             // clear previous errors
             meta.errors = [];
+            meta.warnings = [];
+            meta.infos = [];
 
             // run validator agains model value
             for (let validatorItem of validators) {
-                let result = validatorItem.validator(meta.value, formModel); // Note: for each validator function, we pass second parameter that is FormModel
-                if (result !== true) {
-                    valid = false;
-                    meta.errors.push(validatorItem.errorMessage);
-                    break;
+
+                // For errors array, we allow only 1 error to be present
+                if (validatorItem.type === 'error' || typeof (validatorItem.type) === 'undefined') {
+                    if (meta.errors.length != 0)
+                        continue;
+                }
+
+
+                // execute validator and get result (should be boolean)
+                let result;
+                try {
+                    result = validatorItem.validator(meta.value, formModel); // Note: for each validator function, we pass second parameter that is FormModel                
+                }
+                catch (err) {
+                    console.error(`\nError while running validator for meta '${meta.name}'`);
+                    console.error(err);
+                }
+
+                if (result === false) {
+
+                    let message = null;
+                    if (typeof (validatorItem.message) === 'string') {
+                        message = validatorItem.message;
+                    } else if (typeof (validatorItem.message) === 'function') {
+                        message = validatorItem.message(meta.value, formModel);
+                    }
+                    else {
+                        console.error('Validator\'s message property is not string or function.');
+                    }
+
+
+                    // WARNING: meta is invalid if type of failed validator is type of 'error'
+                    // add message to corresponding array
+                    if (message != null) {
+                        if (validatorItem.type === 'error') {
+                            meta.errors.push(message);
+                            valid = false;
+                        }
+                        else if (validatorItem.type === 'info')
+                            meta.infos.push(message);
+                        else if (validatorItem.type === 'warning')
+                            meta.warnings.push(message);
+                        else {
+                            valid = false;
+                            meta.errors.push(message); // if type is not set, treat is as error
+                            console.warn(`Validator for ${meta.name} is missing type property.`);
+                        }
+                    }
+                }
+
+                // if validator returned something other than boolean, log it to console
+                if (typeof (result) !== 'boolean') {
+                    console.error(`Validator returned result of type ${typeof (result)} for meta '${meta.name}'`);
                 }
             }
         }
@@ -156,6 +244,10 @@ export default class FormModelValidator {
 
         // now loop every path and validate value at path
         for (let pathIndex = 0; pathIndex < validatorPaths.length; pathIndex++) {
+            if (valid === false && stopOnFirstError === true)
+                break;
+
+
             let path = validatorPaths[pathIndex];
 
             if (FormModelValidator.pathIsArray(path)) {
@@ -171,16 +263,10 @@ export default class FormModelValidator {
                     let meta = arrInfo.arrayItemIsMeta
                         ? arrayItem
                         : arrayItem[arrInfo.metaPropertyName];
-                    meta.errors = [];
-                    // run validator agains meta value
-                    for (let validatorItem of arrayOfValidators) {
-                        let result = validatorItem.validator(meta.value, formModel); // Note: for each validator function, we pass second parameter that is FormModel
-                        if (result !== true) {
-                            valid = false;
-                            meta.errors.push(validatorItem.errorMessage);
-                            if (stopOnFirstError === true)
-                                break;
-                        }
+
+                    let result = FormModelValidator.isMetaValid(formModel, formModelValidators, meta.name);
+                    if (!result) {
+                        valid = false;
                     }
                 });
 
@@ -195,19 +281,6 @@ export default class FormModelValidator {
         }
 
         return valid;
-    }
-
-    // function puts errors in form-model (when we get model validation on server). 
-    static replaceErrors(formModel, errors) {
-        _.forOwn(errors, (errorArray, path) => {
-            let meta = FormModelValidator.getMetaByPath(formModel, path);
-            if (meta) {
-                meta.errors = [];
-                meta.errors = errorArray;
-            }
-        });
-
-        return formModel;
     }
 
     // function checks is passed object has shape of metadata
@@ -249,14 +322,14 @@ export default class FormModelValidator {
             let part = parts[partIndex];
             // if it is the last part in path, then create empty array
             if (partIndex === parts.length - 1) {
-                if(typeof(nestedObject[part]) === 'undefined')
-                    nestedObject[part] = [];                
+                if (typeof (nestedObject[part]) === 'undefined')
+                    nestedObject[part] = [];
             } else {
                 if (nestedObject.hasOwnProperty(part) === false)
                     nestedObject[part] = {};
             }
             nestedObject = nestedObject[part];
-        }        
+        }
         return nestedObject;
     }
 
@@ -266,25 +339,27 @@ export default class FormModelValidator {
         // Make a copy of formModel
         let formModelCopy = _.cloneDeep(formModel);
 
-        // we always need to delete formModel['_modelErrors'] property. It is used only to display errors on web page
-        delete formModelCopy['_modelErrors'];
+        // we always need to delete formModel['_model'] property. It is used only to display errors on web page
+        delete formModelCopy['_model'];
 
         let result = {};
-        _.forOwn(formModelCopy, (formModelPathValue, formModelPath) => {
+        _.forOwn(formModelCopy, (metaOrArray, path) => {
 
-            if (_.isArray(formModelPathValue)) {
-                let arrayForJson = FormModelValidator.getOrCreateNestedArray(result, formModelPath);
+            if (_.isArray(metaOrArray)) {
+                //let arrayForJson = FormModelValidator.getOrCreateNestedArray(result, path);
+                _.set(result, path, []);
+                let arrayForJson = _.get(result, path);
 
-                formModelPathValue.forEach((arrayItem) => {
+                metaOrArray.forEach((arrayItem) => {
                     // if formModelValidators contains function that creates json, use it
-                    if (formModelValidators && typeof formModelValidators[`${formModelPath}[].getJSON`] === 'function') {
-                        let customJson = formModelValidators[`${formModelPath}[].getJSON`](arrayItem, formModelCopy);
-                        if (customJson != null) {
+                    if (formModelValidators && typeof formModelValidators[`${path}.getJSON`] === 'function') {
+                        let customJson = formModelValidators[`${path}.getJSON`](arrayItem, formModelCopy);
+                        if (typeof(customJson) !== 'undefined' && customJson !== null) {
                             arrayForJson.push(customJson);
                         }
                     } else {
                         // if each array item is meta, then add value of that meta to array
-                        if (arrayItem.key &&  FormModelValidator.objectIsMeta(arrayItem)) {
+                        if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem)) {
                             arrayForJson.push({ key: arrayItem.key, value: arrayItem.value });
                         }
                         else {
@@ -305,49 +380,76 @@ export default class FormModelValidator {
                     }
                 });
             }
-            else if (FormModelValidator.objectIsMeta(formModelPathValue)) {
-                // split path and create nested objects if necessary
-                if (formModelPath.indexOf('.') !== -1) {
-                    var parts = formModelPath.split('.');
-                    let nestedObject = FormModelValidator.getOrCreateNestedObjects(result, formModelPath);
-                    nestedObject[parts[parts.length - 1]] = formModelPathValue.value;
-
+            else if (FormModelValidator.objectIsMeta(metaOrArray)) {
+                if (formModelValidators && typeof formModelValidators[`${path}.getJSON`] === 'function') {
+                    let customValue = formModelValidators[`${path}.getJSON`](metaOrArray, formModelCopy);
+                    if (typeof(customValue) !== 'undefined' && customValue !== null) {
+                        _.set(result, path, customValue);
+                    }
                 } else {
-                    result[formModelPath] = formModelPathValue.value;
+                    _.set(result, path, metaOrArray.value);
                 }
             }
         });
         return result;
     }
 
-    // function accepts form model and return plain json object with just errors
-    // Example: { email: ['error1', 'error2'], firstName: ['error3', 'error4'] }
+    // function accepts form model and return plain json object with just errors/warnings/infos    
     static getErrors(formModel) {
         let errors = {};
-        _.forOwn(formModel, (formModelFieldValue, formModelFieldName) => {
-            if (_.isArray(formModelFieldValue)) {
+        _.forOwn(formModel, (metaOrArray, path) => {
+            if (_.isArray(metaOrArray)) {
                 // this is array, loop array to get errors from array items
-                formModelFieldValue.forEach((arrayItem) => {
-                    if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem)) { // FormModelValidator.objectIsMeta(arrayItem)
-                        // array item is meta, get errors form that meta
+                metaOrArray.forEach((arrayItem) => {
+                    if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem)) {
+                        // array item is object that contains single meta
+                        let errorObjKeyName = `${path}[${arrayItem.key}]`; // key name of error object                        
                         if (arrayItem.errors && arrayItem.errors.length > 0) {
-                            errors[`${formModelFieldName}[${arrayItem.key}]`] = arrayItem.errors;
+                            if (!errors[errorObjKeyName]) { errors[errorObjKeyName] = {}; }
+                            errors[errorObjKeyName].errors = arrayItem.errors;
+                        }
+                        if (arrayItem.warnings && arrayItem.warnings.length > 0) {
+                            if (!errors[errorObjKeyName]) { errors[errorObjKeyName] = {}; }
+                            errors[errorObjKeyName].warnings = arrayItem.warnings;
+                        }
+                        if (arrayItem.infos && arrayItem.infos.length > 0) {
+                            if (!errors[errorObjKeyName]) { errors[errorObjKeyName] = {}; }
+                            errors[errorObjKeyName].infos = arrayItem.infos;
                         }
                     } else {
-                        // array item is object that contains meta, loop object proeprties and get errors from each meta
+                        // array item is object that contains multiple meta, loop object proeprties and get errors from each meta
                         _.forOwn(arrayItem, (arrayItemObjectPropValue, arrayItemObjectPropName) => {
+                            const errorObjKeyName = `${path}[${arrayItem.key}].${arrayItemObjectPropName}`;
                             if (FormModelValidator.objectIsMeta(arrayItemObjectPropValue)) {
-                                // array item is meta, get errors form that meta
                                 if (arrayItemObjectPropValue.errors && arrayItemObjectPropValue.errors.length > 0) {
-                                    errors[`${formModelFieldName}[${arrayItem.key}].${arrayItemObjectPropName}`] = arrayItemObjectPropValue.errors;
+                                    if (!errors[errorObjKeyName]) { errors[errorObjKeyName] = {}; }
+                                    errors[errorObjKeyName].errors = arrayItemObjectPropValue.errors;
+                                }
+                                if (arrayItemObjectPropValue.warnings && arrayItemObjectPropValue.warnings.length > 0) {
+                                    if (!errors[errorObjKeyName]) { errors[errorObjKeyName] = {}; }
+                                    errors[errorObjKeyName].warnings = arrayItemObjectPropValue.warnings;
+                                }
+                                if (arrayItemObjectPropValue.infos && arrayItemObjectPropValue.infos.length > 0) {
+                                    if (!errors[errorObjKeyName]) { errors[errorObjKeyName] = {}; }
+                                    errors[errorObjKeyName].infos = arrayItemObjectPropValue.infos;
                                 }
                             }
                         });
                     }
                 });
-            } else if (FormModelValidator.objectIsMeta(formModelFieldValue) || formModelFieldName === "_modelErrors") {
-                if (formModelFieldValue.errors && formModelFieldValue.errors.length > 0) {
-                    errors[formModelFieldName] = formModelFieldValue.errors;
+            } else if (FormModelValidator.objectIsMeta(metaOrArray) || path === "_model") {
+
+                if (metaOrArray.errors && metaOrArray.errors.length > 0) {
+                    if (!errors[path]) { errors[path] = {}; }
+                    errors[path].errors = metaOrArray.errors;
+                }
+                if (metaOrArray.warnings && metaOrArray.warnings.length > 0) {
+                    if (!errors[path]) { errors[path] = {}; }
+                    errors[path].warnings = metaOrArray.warnings;
+                }
+                if (metaOrArray.infos && metaOrArray.infos.length > 0) {
+                    if (!errors[path]) { errors[path] = {}; }
+                    errors[path].infos = metaOrArray.infos;
                 }
             }
         });
@@ -356,16 +458,41 @@ export default class FormModelValidator {
         return errors;
     }
 
+    // function puts errors in form-model (when we get model validation on server). 
+    static replaceErrors(formModel, errors) {
+        _.forOwn(errors, (obj, path) => {
+            let meta = null;
+            if (path === '_model') {
+                meta = FormModelValidator.getMetaByPath(formModel, path);
+                if (!meta) {
+                    meta = {};
+                    formModel['_model'] = meta;
+                }
+            } else {
+                meta = FormModelValidator.getMetaByPath(formModel, path);
+            }
+
+            if (meta) {
+                meta.errors = [];
+                meta.errors = obj.errors;
+                meta.warnings = obj.warnings;
+                meta.infos = obj.infos;
+            }
+        });
+
+        return formModel;
+    }
+
     // function returns true if form model has errors (validators will not be run agains form model paths)
     static hasExistingErrors(formModel) {
         let hasErrors = false;
-        _.forOwn(formModel, (formModelPathValue, formModelPath) => {
-            if(hasErrors === true) {
-                return hasErrors;    
+        _.forOwn(formModel, (metaOrArray, path) => {
+            if (hasErrors === true) {
+                return hasErrors;
             }
-            if (_.isArray(formModelPathValue)) {
+            if (_.isArray(metaOrArray)) {
                 // this is array, loop array to get errors from array items
-                formModelPathValue.forEach((arrayItem) => {
+                metaOrArray.forEach((arrayItem) => {
                     if (FormModelValidator.objectIsMeta(arrayItem)) {
                         // array item is meta, get errors form that meta
                         if (arrayItem.errors && arrayItem.errors.length > 0) {
@@ -383,8 +510,8 @@ export default class FormModelValidator {
                         });
                     }
                 });
-            } else if (FormModelValidator.objectIsMeta(formModelPathValue) || formModelPath === "_modelErrors") {
-                if (formModelPathValue.errors && formModelPathValue.errors.length > 0) {
+            } else if (FormModelValidator.objectIsMeta(metaOrArray) || path === "_model") {
+                if (metaOrArray.errors && metaOrArray.errors.length > 0) {
                     hasErrors = true;
                 }
             }

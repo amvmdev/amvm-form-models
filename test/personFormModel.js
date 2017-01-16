@@ -1,4 +1,6 @@
-export const personFormModel = {
+import _ from 'lodash';
+
+let personFormModel = {
 
     'not.meta': {
     },
@@ -6,15 +8,15 @@ export const personFormModel = {
     'name.first': {
         title: 'First name',
         name: 'name.first',
-        value: 'John'
+        value: 'John',
+        maxLength: 100
         // errors field is missing, but it is still meta
     },
 
     'name.last': {
         title: 'Last name',
         name: 'name.last',
-        value: 'Brown',
-        errors: []
+        value: 'Brown'
     },
 
     'isAdult': {
@@ -35,14 +37,12 @@ export const personFormModel = {
             type: {
                 title: 'Email type',
                 name: 'emails[key1].type',
-                value: 'Work',
-                errors: []
+                value: 'Work'
             },
             email: {
                 title: 'Email',
                 name: 'emails[key1].email',
-                value: 'john@company.com',
-                errors: []
+                value: 'john@company.com'
             }
         },
         {
@@ -50,14 +50,12 @@ export const personFormModel = {
             type: {
                 title: 'Email type',
                 name: 'emails[key2].type',
-                value: 'Personal',
-                errors: []
+                value: 'Personal'
             },
             email: {
                 title: 'Email',
                 name: 'emails[key2].email',
-                value: 'john@gmail.com',
-                errors: []
+                value: 'john@gmail.com'
             }
         }
     ],
@@ -67,16 +65,20 @@ export const personFormModel = {
             key: 'key1',
             title: 'Label',
             name: 'labels[key1]',
-            value: 'red',
-            errors: []
-
+            value: 'red'
         },
         {
             key: 'key2',
             title: 'Label',
             name: 'labels[key2]',
-            value: 'blue',
-            errors: []
+            value: 'blue'
         }
     ]    
+
+}
+
+
+export function createValidFormModel() {
+    let formModel = _.cloneDeep(personFormModel);
+    return formModel;
 }

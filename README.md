@@ -18,13 +18,16 @@ export class PersonFormModel {
             title: 'First name',
             name: 'name.first',
             value: 'John',
-            errors: []            
+            maxLength: 100,
+            errors: [],
+            warnings: [],
+            infos: []
         },
         'name.last': {
             title: 'Last name',
             name: 'name.last',
             value: 'Brown',
-            // errors field is missing, but it is still meta
+            // errors, warnings and infos field is missing, and they will be created automatically when validating
         },
         'gender': {
             value: 'male',
@@ -53,14 +56,12 @@ export class PersonFormModel {
                 type: {
                     title: 'Email type',
                     name: 'emails[key1].type',
-                    value: 'Work',
-                    errors: []
+                    value: 'Work'
                 },
                 email: {
                     title: 'Email',
                     name: 'emails[key1].email',
-                    value: 'john@company.com',
-                    errors: []
+                    value: 'john@company.com'
                 }
             },
             {
@@ -68,14 +69,12 @@ export class PersonFormModel {
                 type: {
                     title: 'Email type',
                     name: 'emails[key2].type',
-                    value: 'Personal',
-                    errors: []
+                    value: 'Personal'
                 },
                 email: {
                     title: 'Email',
                     name: 'emails[key2].email',
-                    value: 'john@gmail.com',
-                    errors: []
+                    value: 'john@gmail.com'
                 }
             }
         ],
@@ -85,27 +84,24 @@ export class PersonFormModel {
                 key: 'key1',
                 title: 'Label',
                 name: 'labels[key1]',
-                value: 'red',
-                errors: []
+                value: 'red'
 
             },
             {
                 key: 'key2',
                 title: 'Label',
                 name: 'labels[key2]',
-                value: 'blue',
-                errors: []
+                value: 'blue'
             }
         ]  
         
-        _modelErrors: {
-            errors: []
-        }
+        // errors, warnings and infos arrays will be automatically created if there are validators for '_model' path
+        _model: { }
     }
 }
 ```
 
-In this class, `name` property is meta object. Meta object has following properties:
+In this class, `name.first` property is meta object. Meta object has following properties:
 
 Property | Description
 --- | ---
@@ -115,13 +111,15 @@ required | If set to true, `<label>` tag will display
 maxlength | This value will be set as `maxlength` attribute on `<input>` tag
 name | Value of name property is used for name atribute of input tag
 errors[] | Array of errors after running all validators against value property
+warnings[] | Array of warnings after running all validators against value property
+infos[] | Array of info messages after running all validators against value property
 dropdownValues | Array of object. Each object should have `value` and `text` property. This array can be used to build dropdown with these values.
 
 `labels` property is array. Each array item contains meta object with additional member called `key`.
 
 `emails` property is array. Each array item contains obejct with `key` property, and many meta objects. Thats why `name` property of each meta obejct has format of `emails[some_unique_key].%property_name%`
 
-`_modelErrors` is special property that contains just errors of complex validation. Complex validation does not belong to specific meta. Complex validation validates whole form model. This property will be automatically created if form model validators  class contains property `_modelErrors` with validators.
+`_model` is special property that contains errors, warnings and infos arrays. These arrays will be created by complex validators in '_model' field. Complex validation does not belong to specific meta. Complex validation validates whole form model.
 
 Resulting JSON will have following shape:
 ```javascript
@@ -132,10 +130,31 @@ Resulting JSON will have following shape:
     },
     isAdult: true,
     age: 30,    
-    labels: [ 'label_1', 'label_2'],
+    labels: [
+        { 
+            key: 'key1', 
+            value: 'red'
+        },
+        { 
+            key: 'key2', 
+            value: 'blue'
+        }
+    ],
     emails: [ 
-        { type: 'Work', email: 'john@company.com' },
-        { type: 'Personal', email: 'john@gmail.com' },
+        { 
+            key: 'key1', 
+            value: { 
+                type: 'Work', 
+                email: 'john@company.com' 
+            }
+        },
+        {
+            key: 'key2',
+            value: { 
+                type: 'Personal', 
+                email: 'john@gmail.com' 
+            }
+        }        
     ]
 }
 ```
@@ -147,79 +166,92 @@ export class PersonFormModelValidators {
         this['name.first'] = [
             {
                 validator: (value, formModel) => value.length < 10,
-                errorMessage: 'First name must be less than 10 characters'
+                message: 'First name must be less than 10 characters',
+                type: 'error'
             },
             {
-                validator: (value, formModel) => value && value.length > 0,
-                errorMessage: 'First name is required'
-            }
+                validator: (value, formModel) => value.length > 0,
+                message: 'First name is required',
+                type: 'error'
+            },
+            {
+                validator: (value, formModel) => value.length !== 1,
+                message: (value) => `${value} is too short for a name`,
+                type: 'warning'
+            },            
+            {
+                validator: (value, formModel) => value !== 'test',
+                message: 'Is is really test?',
+                type: 'info'
+            } 
         ],
 
         this['name.last'] = [
             {
-                validator: (value, formModel) => value && value.length > 0,
-                errorMessage: 'Last name is required'
+                validator: (value, formModel) => value.length < 10,
+                message: 'Last name must be less than 10 characters',
+                type: 'error'
             },
             {
-                validator: (value, formModel) => value != '1234567890',
-                errorMessage: 'Last name cannot be 1234567890'
-            }           
+                validator: (value, formModel) => value.length > 0,
+                message: 'Last name is required',
+                type: 'error'
+            },         
         ]
 
         this['labels[]'] = [
             {
                 validator: (value, formModel) => value.length < 5,
-                errorMessage: 'Label must be less than 5 characters'
+                message: 'Label must be less than 5 characters',
+                type: 'error'
             }            
         ]
 
         this['emails[].type'] = [
             {
                 validator: (value, formModel) => value == "Work" || value == "Personal",
-                errorMessage: 'Type of email can only be Work or Personal'
+                message: 'Type of email can only be Work or Personal',
+                type: 'error'
             }            
         ],
         this['emails[].email'] = [
             {
                 validator: (value, formModel) => value.indexOf('@temp.com') == -1,
-                errorMessage: 'gmail.com is not allowed'
+                message: 'temp.com is not allowed',
+                type: 'error'
             }            
         ],
         
-        this._modelErrors = [
+        this._model = [
             {
-                validator: (formModel) => formModel.labels.length <= 2,
-                errorMessage: 'Maximum 2 labels allowed'
-            },
-            {
-                validator: (formModel) => formModel.emails.length <= 2,
-                errorMessage: 'Maximum 1 email allowed'
+                validator: (formModel) => formModel['name.first'].value !== formModel['name.first'].value,
+                message: 'First name is the same as last name',
+                type: 'error'
             }
-        ],
-        
-        // function that creates part of final json.
-        this["emails[].getJSON"] = function (arrayItem) {
-            if (arrayItem.email.value === "") {
-                return null;
-            } else {
-                return {
-                    key: arrayItem.key,
-                    value: {
-                        email: arrayItem.email.value,
-                        type: arrayItem.type.value
-                    }
+        ],        
+
+        // function that used by `getJSON` function to produce array item for json's labels property
+        this['labels[].getJSON'] = (arrayItem, formModel) => {
+            return {
+                key: arrayItem.key,
+                value: arrayItem.value
+            }
+        }
+
+        // function that used by `getJSON` function to produce array item for json's emails property
+        this['emails[].getJSON'] = (arrayItem, formModel) => {
+            return {
+                key: arrayItem.key,
+                value: {
+                    type: arrayItem.type.value,
+                    email: arrayItem.email.value
                 }
             }
-        },
-        this["labels[].getJSON"] = function (arrayItem) {
-            if (arrayItem.value === "") {
-                return null;
-            } else {
-                return {
-                    key: arrayItem.key,
-                    value: arrayItem.value
-                }
-            }
+        }
+
+        // function that used by `getJSON` function to produce value for json's name.first property
+        this['name.first.getJSON'] = (meta, formModel) => {
+            return meta.value
         }
     }
 }
@@ -266,25 +298,79 @@ Example of calling `parsePathToArray('emails[key2].email')`:
 Returns index of array item that contains passed unique key
 
 #### isMetaValid(formModel, formModelValidators, path)
-Function finds meta by path, and runs validators against meta's value. If validator returns false, we add errors message from validator to meta's errors array. Returns true if meta object is valid.
+Function finds meta by path, and runs validators against meta's value. 
+If validator returns false, we add message to `errors` or `warnings` or `infos` array depends on the type. 
+Returns true if meta object is valid.
 
 #### isModelValid(formModel, formModelValidators, stopOnFirstError)
-Function takes all validators and validates corresponding meta object in form model. While validating, `errors` property of each meta is filled of validation error messages. If `stopOnFirstError` is set to true (default is false), then validation process stops after first meta object is invalid. Returns true if form model is valid.
+Function takes all validators and validates corresponding meta object in form model. 
+While validating, `errors`, `warnings` and `infos` properties of each meta is filled of validation messages. 
+If `stopOnFirstError` is set to true (default is false), then validation process stops after first meta object is invalid. 
+Returns true if form model is valid.
 
-#### replaceErrors(formModel, errors)
-Function takes errors as argument, and replaces errors in form model with passed errors object. `errors` is an object in following format:
+#### getErrors(formModel)
+Function accepts form model and return plain json object with errors, warnings and infos. Example of return value:
 ```javascript
 {
-    'name.first': ['error1', 'error2'], 
-    'name.last': ['error3', 'error4'],
-    'emails[key2].type': [ 'error 5' ],
-    'labels[key2]': [ 'error 6']
+    'name.first': {
+        errors: ['msg', 'msg'],
+        warnings: ['msg', 'msg'],
+        infos: ['msg', 'msg'],
+
+    },
+    'emails[key2].type': {
+        errors: [ 'msg' ],
+        warnings: [ 'msg' ],
+        infos: [ 'msg' ]
+    },
+    'emails[key2].email': {
+        errors: [ 'msg' ],
+        warnings: [ 'msg' ],
+        infos: [ 'msg' ]
+    },
+    'labels[key2]': [ 'msg'],
+    '_model': {
+        errors: ['msg', 'msg'],
+        warnings: ['msg', 'msg'],
+        infos: ['msg', 'msg'],
+
+    },
+}
+```
+
+#### replaceErrors(formModel, errors)
+Function takes errors as argument, and replaces errors/warnings/infos in form model with passed errors object. `errors` is an object in following format:
+```javascript
+{
+    'name.first': {
+        errors: ['msg', 'msg'],
+        warnings: ['msg', 'msg'],
+        infos: ['msg', 'msg'],
+
+    },
+    'emails[key2].type': {
+        errors: [ 'msg' ],
+        warnings: [ 'msg' ],
+        infos: [ 'msg' ]
+    },
+    'emails[key2].email': {
+        errors: [ 'msg' ],
+        warnings: [ 'msg' ],
+        infos: [ 'msg' ]
+    },
+    'labels[key2]': [ 'msg'],
+    '_model': {
+        errors: ['msg', 'msg'],
+        warnings: ['msg', 'msg'],
+        infos: ['msg', 'msg'],
+
+    },
 }
 ```
 
 
 #### objectIsMeta(obj) 
-Returns true if object has `value`, `errors` and `title` property.
+Returns true if object has `value` of type `string`, `number` or `boolean`.
 
 #### getOrCreateNestedObjects(json, path)
 Function takes json object, and adds nested object by path. Function return deepest object created.
@@ -318,20 +404,12 @@ Example:
 #### getJSON(formModel, formModelValidators)
 Function converts form model into json object. Following rules are applied:
 
-First, `_modelErrors` meta is deleted from form model. It is used to display complex validation errors on web page.
+First, `_model` object is deleted from form model. It is used to display complex validation errors on web page.
 
-Next, form models properties that are arrays, are converted into array on json. Meta peoperties converted into simple key/value property for json.
+Next, form models properties that are arrays, are converted into array on json. Meta properties converted into simple key/value property for json.
+If form model validator has function that creates custom json, it will be used to create value for json part.
 
-#### getErrors(formModel)
-Function accepts form model and return plain json object with just errors. Example of return value:
-```javascript
-{ 
-    'name.first': ['error1', 'error2'], 
-    'name.last': ['error3', 'error4'],
-    'emails[key2].type': [ 'error 5' ],
-    'labels[key2]': [ 'error 6']
-}
-```
+
 
 #### hasExistingErrors(formModel)
 Function returns true if form model has errors (validators will not be run agains form model field).

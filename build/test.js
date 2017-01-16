@@ -56,9 +56,7 @@ module.exports =
 	
 	var _personFormModel = __webpack_require__(74);
 	
-	var _invalidPersonFormModel = __webpack_require__(75);
-	
-	var _personFormModelValidators = __webpack_require__(76);
+	var _personFormModelValidators = __webpack_require__(75);
 	
 	var _formModelValidator = __webpack_require__(1);
 	
@@ -72,97 +70,108 @@ module.exports =
 	
 	var personFormModelValidators = new _personFormModelValidators.PersonFormModelValidators();
 	
-	describe('Object is meta', function () {
+	describe('FormModelValidator.objectIsMeta(obj) tests', function () {
+	    var personFormModel = (0, _personFormModel.createValidFormModel)();
 	
-	    it("FormModelValidator.objectIsMeta(personFormModel['name.first']) is meta (meta value is string)", function () {
-	        return _assert2.default.equal(_formModelValidator2.default.objectIsMeta(_personFormModel.personFormModel['name.first']), true);
+	    it("'name.first' is meta", function () {
+	        return _assert2.default.equal(_formModelValidator2.default.objectIsMeta(personFormModel['name.first']), true);
 	    });
 	
-	    it("FormModelValidator.objectIsMeta(personFormModel['isAdult']) is meta (meta value is boolean)", function () {
-	        return _assert2.default.equal(_formModelValidator2.default.objectIsMeta(_personFormModel.personFormModel['isAdult']), true);
+	    it("'isAdult' is meta", function () {
+	        return _assert2.default.equal(_formModelValidator2.default.objectIsMeta(personFormModel['isAdult']), true);
 	    });
 	
-	    it("FormModelValidator.objectIsMeta(personFormModel['age']) is meta (meta value is number)", function () {
-	        return _assert2.default.equal(_formModelValidator2.default.objectIsMeta(_personFormModel.personFormModel['age']), true);
+	    it("'age'is meta", function () {
+	        return _assert2.default.equal(_formModelValidator2.default.objectIsMeta(personFormModel['age']), true);
 	    });
 	
-	    it("FormModelValidator.objectIsMeta(personFormModel['not.meta']) is not meta", function () {
-	        return _assert2.default.equal(_formModelValidator2.default.objectIsMeta(_personFormModel.personFormModel['not.meta']), false);
+	    it("'not.meta' is not meta", function () {
+	        return _assert2.default.equal(_formModelValidator2.default.objectIsMeta(personFormModel['not.meta']), false);
 	    });
 	});
 	
-	describe('Retrieving meta object', function () {
+	describe('getMetaByPath(formModel, path) tests', function () {
+	    var personFormModel = (0, _personFormModel.createValidFormModel)();
 	
-	    it("FormModelValidator.getMetaByPath(personFormModel, 'name.first') returns meta with correct value", function () {
-	        var firstNameMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'name.first');
+	    it("'name.first' returns meta", function () {
+	        var firstNameMeta = _formModelValidator2.default.getMetaByPath(personFormModel, 'name.first');
 	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(firstNameMeta), true);
 	        _assert2.default.equal(firstNameMeta.value, 'John');
 	    });
 	
-	    it("FormModelValidator.getMetaByPath(personFormModel, 'name.incorrect') returns null", function () {
-	        var nullResult = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'name.incorrect');
+	    it("'name.incorrect' returns null", function () {
+	        var nullResult = _formModelValidator2.default.getMetaByPath(personFormModel, 'name.incorrect');
 	        _assert2.default.equal(nullResult, null);
 	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(nullResult), false);
 	    });
 	
-	    it("FormModelValidator.getMetaByPath(personFormModel, 'labels[key1]') returns meta", function () {
-	        var labelMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'labels[key1]');
+	    it("'labels[key1]' returns meta", function () {
+	        var labelMeta = _formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key1]');
 	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(labelMeta), true);
 	        _assert2.default.equal(labelMeta.value, 'red');
 	    });
 	
-	    it("FormModelValidator.getMetaByPath(personFormModel, 'emails[key1].email') returns meta", function () {
-	        var emailMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'emails[key1].email');
+	    it("'emails[key1].email' returns meta", function () {
+	        var emailMeta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].email');
 	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(emailMeta), true);
 	        _assert2.default.equal(emailMeta.value, 'john@company.com');
 	    });
 	
-	    it("FormModelValidator.getMetaByPath(personFormModel, 'emails[key1]') returns null", function () {
-	        var invalidMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'emails[key1]');
+	    it("'emails[key1]' returns null", function () {
+	        var invalidMeta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1]');
+	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(invalidMeta), false);
+	        _assert2.default.equal(invalidMeta, undefined);
+	    });
+	
+	    it("'emails[key10].email' returns null", function () {
+	        var invalidMeta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key10].email');
 	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(invalidMeta), false);
 	        _assert2.default.equal(invalidMeta, undefined);
 	    });
 	});
 	
-	describe('Field name is array and get correct index by key', function () {
-	    it("FormModelValidator.pathIsArray('labels[key1]') returns true", function () {
+	describe('pathIsArray(path) tests', function () {
+	
+	    it("'labels[key1]' returns true", function () {
 	        _assert2.default.equal(_formModelValidator2.default.pathIsArray('labels[key1]'), true);
 	    });
 	
-	    it("FormModelValidator.pathIsArray('emails[key1].email') returns true", function () {
+	    it("'emails[key1].email' returns true", function () {
 	        _assert2.default.equal(_formModelValidator2.default.pathIsArray('emails[key1].email'), true);
 	    });
 	
-	    it("FormModelValidator.getArrayIndex(personFormModel.emails, 'key1') returns index 0", function () {
-	        var indexZero = _formModelValidator2.default.getArrayIndexByKey(_personFormModel.personFormModel.emails, 'key1');
+	    it("'emails.email' returns false", function () {
+	        _assert2.default.equal(_formModelValidator2.default.pathIsArray('emails.email'), false);
+	    });
+	});
+	
+	describe('getArrayIndex(array, key) tests', function () {
+	    var personFormModel = (0, _personFormModel.createValidFormModel)();
+	
+	    it("(emails, key1) returns index 0", function () {
+	        var indexZero = _formModelValidator2.default.getArrayIndexByKey(personFormModel.emails, 'key1');
 	        _assert2.default.equal(indexZero, 0);
 	    });
 	
-	    it("FormModelValidator.getArrayIndex(personFormModel.emails, 'key2') returns index 1", function () {
-	        var indexOne = _formModelValidator2.default.getArrayIndexByKey(_personFormModel.personFormModel.emails, 'key2');
+	    it("(emails, key2) returns index 1", function () {
+	        var indexOne = _formModelValidator2.default.getArrayIndexByKey(personFormModel.emails, 'key2');
 	        _assert2.default.equal(indexOne, 1);
 	    });
 	
-	    it("FormModelValidator.getArrayIndex(personFormModel.emails, 'InvalidKey') returns -1 for non-existing key", function () {
-	        var indexMinusOne = _formModelValidator2.default.getArrayIndexByKey(_personFormModel.personFormModel.emails, 'InvalidKey');
+	    it("(emails, 'InvalidKey') returns -1", function () {
+	        var indexMinusOne = _formModelValidator2.default.getArrayIndexByKey(personFormModel.emails, 'InvalidKey');
 	        _assert2.default.equal(indexMinusOne, -1);
 	    });
 	
-	    it("FormModelValidator.getArrayIndex(personFormModel.labels, 'InvalidKey') returns -1 for non-existing key", function () {
-	        var indexMinusOne = _formModelValidator2.default.getArrayIndexByKey(_personFormModel.personFormModel.labels, 'InvalidKey');
+	    it("(labels, 'InvalidKey') returns -1", function () {
+	        var indexMinusOne = _formModelValidator2.default.getArrayIndexByKey(personFormModel.labels, 'InvalidKey');
 	        _assert2.default.equal(indexMinusOne, -1);
 	    });
 	});
 	
-	describe('Array of single meta objects', function () {
+	describe('parsePathToArray(path) tests', function () {
 	
-	    it("FormModelValidator.getMetaByPath(formModel, 'labels[key1]') returns meta for path to array", function () {
-	        var labelMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'labels[key1]');
-	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(labelMeta), true);
-	        _assert2.default.equal(labelMeta.value, 'red');
-	    });
-	
-	    it("FormModelValidator.parsePathToArray('labels[key2]') returns correct object", function () {
+	    it("'labels[key2]' returns correct object", function () {
 	        var obj = _formModelValidator2.default.parsePathToArray('labels[key2]');
 	        _assert2.default.equal(obj.itemKey, 'key2');
 	        _assert2.default.equal(obj.pathToArray, 'labels');
@@ -170,23 +179,8 @@ module.exports =
 	        _assert2.default.equal(obj.metaPropertyName, null);
 	        _assert2.default.equal(obj.nameOfValidatorField, 'labels[]');
 	    });
-	});
 	
-	describe('Array of multiple meta objects', function () {
-	
-	    it("FormModelValidator.getMetaByPath(formModel, 'emails[key1].type') returns meta for path to array", function () {
-	        var typeMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'emails[key1].type');
-	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(typeMeta), true);
-	        _assert2.default.equal(typeMeta.value, 'Work');
-	    });
-	
-	    it("FormModelValidator.getMetaByPath(formModel, 'emails[key2].email') returns meta for path to array", function () {
-	        var typeMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'emails[key2].email');
-	        _assert2.default.equal(_formModelValidator2.default.objectIsMeta(typeMeta), true);
-	        _assert2.default.equal(typeMeta.value, 'john@gmail.com');
-	    });
-	
-	    it("FormModelValidator.parsePathToArray('emails[key2].email') returns correct object", function () {
+	    it("'emails[key2].email' returns correct object", function () {
 	        var obj = _formModelValidator2.default.parsePathToArray('emails[key2].email');
 	        _assert2.default.equal(obj.itemKey, 'key2');
 	        _assert2.default.equal(obj.pathToArray, 'emails');
@@ -196,108 +190,434 @@ module.exports =
 	    });
 	});
 	
-	describe('Validating meta objects', function () {
+	describe('isMetaValid(formModel, formModelValidators, path) tests for valid form model', function () {
 	
-	    it("isMetaValid(personFormModel, personFormModelValidators, 'name.first') is valid", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'name.first');
+	    it("'name.first' is valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'name.first');
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'name.first');
 	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
 	    });
 	
-	    it("isMetaValid(personFormModel, personFormModelValidators, 'name.last') is valid", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'name.last');
+	    it("'name.last' is valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'name.last');
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'name.last');
 	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
 	    });
 	
-	    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'name.last') is not valid", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'name.last');
-	        _assert2.default.equal(isValid, false);
+	    it("'age' is valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'age');
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'age');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
 	    });
 	
-	    it("invalidPersonFormModel['name.last'] has 1 error after validation", function () {
-	        var lastNameMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'name.last');
-	        _assert2.default.equal(lastNameMeta.errors.length, 1);
-	        _assert2.default.equal(lastNameMeta.errors[0], 'Last name is required');
+	    it("'labels[key1]' is valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'labels[key1]');
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key1]');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
 	    });
 	
-	    it("invalidPersonFormModel['name.last'] has 1 error after changing value and running validation", function () {
-	        // set last name to '123456789'
-	        var lastNameMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'name.last');
-	        lastNameMeta.value = '1234567890';
+	    it("'emails[key1].type' is valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].type');
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].type');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
+	    });
 	
-	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'name.last');
-	        _assert2.default.equal(lastNameMeta.errors.length, 1);
-	        _assert2.default.equal(lastNameMeta.errors[0], 'Last name cannot be 1234567890');
+	    it("'emails[key1].email' is valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].email');
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].email');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
 	    });
 	});
 	
-	describe('Validating array of meta objects', function () {
+	describe('isMetaValid(formModel, formModelValidators, path) tests for errors/warnings/infos', function () {
 	
-	    it("isMetaValid(personFormModel, personFormModelValidators, 'labels[key1]') is valid", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'labels[key1]');
-	        _assert2.default.equal(isValid, true);
-	    });
-	
-	    it("isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].type') is valid and has no errors", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'emails[key1].type');
-	        _assert2.default.equal(isValid, true);
-	        var typeMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'emails[key1].type');
-	        _assert2.default.equal(typeMeta.errors.length, 0);
-	    });
-	
-	    it("isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].email') is valid and has no errors", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_personFormModel.personFormModel, personFormModelValidators, 'emails[key1].email');
-	        _assert2.default.equal(isValid, true);
-	        var emailMeta = _formModelValidator2.default.getMetaByPath(_personFormModel.personFormModel, 'emails[key1].email');
-	        _assert2.default.equal(emailMeta.errors.length, 0);
-	    });
-	
-	    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'labels[key3]') is not valid and has errors", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'labels[key3]');
+	    it("'name.first' has error and warning and info", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'name.first');
+	        meta.value = 'error warning info';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'name.first');
 	        _assert2.default.equal(isValid, false);
-	        var labelMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'labels[key3]');
-	        _assert2.default.equal(labelMeta.errors.length, 1);
+	        _assert2.default.equal(meta.errors.length, 1);
+	        _assert2.default.equal(meta.warnings.length, 1);
+	        _assert2.default.equal(meta.infos.length, 1);
 	    });
 	
-	    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].type') is not valid and has errors", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'emails[key3].type');
-	        _assert2.default.equal(isValid, false);
-	        var typeMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'emails[key3].type');
-	        _assert2.default.equal(typeMeta.errors.length, 1);
+	    it("'name.first' has warning but valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'name.first');
+	        meta.value = 'warning';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'name.first');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 1);
+	        _assert2.default.equal(meta.infos.length, 0);
 	    });
 	
-	    it("isMetaValid(invalidPersonFormModel, personFormModelValidators, 'emails[key3].email') is not valid and has errors", function () {
-	        var isValid = _formModelValidator2.default.isMetaValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators, 'emails[key3].email');
+	    it("'name.first' has info but valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'name.first');
+	        meta.value = 'info';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'name.first');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 1);
+	    });
+	
+	    it("'labels[key1]' has error", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key1]');
+	        meta.value = 'error';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'labels[key1]');
 	        _assert2.default.equal(isValid, false);
-	        var emailMeta = _formModelValidator2.default.getMetaByPath(_invalidPersonFormModel.invalidPersonFormModel, 'emails[key3].email');
-	        _assert2.default.equal(emailMeta.errors.length, 1);
+	        _assert2.default.equal(meta.errors.length, 1);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
+	    });
+	
+	    it("'labels[key1]' has warning but valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key1]');
+	        meta.value = 'warning';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'labels[key1]');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 1);
+	        _assert2.default.equal(meta.infos.length, 0);
+	    });
+	
+	    it("'labels[key1]' has info but valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key1]');
+	        meta.value = 'info';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'labels[key1]');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 1);
+	    });
+	
+	    it("'emails[key1].type' has error", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].type');
+	        meta.value = 'error';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].type');
+	        _assert2.default.equal(isValid, false);
+	        _assert2.default.equal(meta.errors.length, 1);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
+	    });
+	
+	    it("'emails[key1].type' has warning but valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].type');
+	        meta.value = 'warning';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].type');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 1);
+	        _assert2.default.equal(meta.infos.length, 0);
+	    });
+	
+	    it("'emails[key1].type' has info but valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].type');
+	        meta.value = 'info';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].type');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 1);
+	    });
+	
+	    it("'emails[key1].email' has error", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].email');
+	        meta.value = 'error';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].email');
+	        _assert2.default.equal(isValid, false);
+	        _assert2.default.equal(meta.errors.length, 1);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 0);
+	    });
+	
+	    it("'emails[key1].email' has warning but valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].email');
+	        meta.value = 'warning';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].email');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 1);
+	        _assert2.default.equal(meta.infos.length, 0);
+	    });
+	
+	    it("'emails[key1].email' has info but valid", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var meta = _formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].email');
+	        meta.value = 'info';
+	        var isValid = _formModelValidator2.default.isMetaValid(personFormModel, personFormModelValidators, 'emails[key1].email');
+	        _assert2.default.equal(isValid, true);
+	        _assert2.default.equal(meta.errors.length, 0);
+	        _assert2.default.equal(meta.warnings.length, 0);
+	        _assert2.default.equal(meta.infos.length, 1);
 	    });
 	});
 	
-	describe('Validating form model', function () {
+	describe('isModelValid(formModel) test for valid form model', function () {
 	
-	    it("isModelValid(personFormModel, personFormModelValidators) returns true", function () {
-	        var isModelValid = _formModelValidator2.default.isModelValid(_personFormModel.personFormModel, personFormModelValidators);
+	    it("result is valid and no errors/warnings/infos are created", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isModelValid = _formModelValidator2.default.isModelValid(personFormModel, personFormModelValidators);
 	        _assert2.default.equal(isModelValid, true);
-	    });
-	
-	    it("personFormModel does not have errors inside '_modelErrors' property after validating whole form", function () {
-	        _assert2.default.equal(_personFormModel.personFormModel['_modelErrors'].errors.length, 0);
-	    });
-	
-	    it("isModelValid(invalidPersonFormModel, personFormModelValidators) returns false", function () {
-	        var isModelValid = _formModelValidator2.default.isModelValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators);
-	        _assert2.default.equal(isModelValid, false);
-	    });
-	
-	    it("invalidPersonFormModel has '_modelErrors' property after validating whole form", function () {
-	        _assert2.default.notEqual(_invalidPersonFormModel.invalidPersonFormModel['_modelErrors'], undefined);
-	        _assert2.default.equal(_invalidPersonFormModel.invalidPersonFormModel['_modelErrors'].errors.length, 1);
+	        //first name
+	        _assert2.default.equal(personFormModel['name.first'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['name.first'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['name.first'].infos.length, 0);
+	        //last name
+	        _assert2.default.equal(personFormModel['name.last'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['name.last'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['name.last'].infos.length, 0);
+	        //age
+	        _assert2.default.equal(personFormModel['age'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['age'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['age'].infos.length, 0);
+	        //labels[0]
+	        _assert2.default.equal(personFormModel['labels'][0].errors.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][0].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][0].infos.length, 0);
+	        //labels[1]
+	        _assert2.default.equal(personFormModel['labels'][1].errors.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][1].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][1].infos.length, 0);
+	        //emails[0].type
+	        _assert2.default.equal(personFormModel['emails'][0].type.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].type.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].type.infos.length, 0);
+	        //emails[0].email
+	        _assert2.default.equal(personFormModel['emails'][0].email.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].email.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].email.infos.length, 0);
+	        //emails[1].type
+	        _assert2.default.equal(personFormModel['emails'][1].type.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].type.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].type.infos.length, 0);
+	        //emails[1].email
+	        _assert2.default.equal(personFormModel['emails'][1].email.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].email.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].email.infos.length, 0);
+	        //_meta
+	        _assert2.default.equal(personFormModel['_model'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['_model'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['_model'].infos.length, 0);
 	    });
 	});
 	
-	describe('Creating nested objects and arrays', function () {
+	describe('isModelValid(formModel) test for invalid form model (errors)', function () {
 	
-	    it("getOrCreateNestedObjects({}, 'contact.name.first') correctly creates nested objects", function () {
+	    it("result is invalid and only errors are created", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        // setting errors to all fields
+	        personFormModel['name.first'].value = 'error meta_err meta_warn meta_inf';
+	        personFormModel['name.last'].value = 'error';
+	        personFormModel['age'].value = 1;
+	
+	        personFormModel['labels'][0].value = 'error';
+	        personFormModel['labels'][1].value = 'error';
+	
+	        personFormModel['emails'][0].type.value = 'error';
+	        personFormModel['emails'][0].email.value = 'error';
+	
+	        personFormModel['emails'][1].type.value = 'error';
+	        personFormModel['emails'][1].email.value = 'error';
+	
+	        var isModelValid = _formModelValidator2.default.isModelValid(personFormModel, personFormModelValidators);
+	        _assert2.default.equal(isModelValid, false);
+	        _assert2.default.equal(personFormModel['name.first'].errors.length, 1);
+	        _assert2.default.equal(personFormModel['name.first'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['name.first'].infos.length, 0);
+	        //last name
+	        _assert2.default.equal(personFormModel['name.last'].errors.length, 1);
+	        _assert2.default.equal(personFormModel['name.last'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['name.last'].infos.length, 0);
+	        // //age
+	        _assert2.default.equal(personFormModel['age'].errors.length, 1);
+	        _assert2.default.equal(personFormModel['age'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['age'].infos.length, 0);
+	        //labels[0]
+	        _assert2.default.equal(personFormModel['labels'][0].errors.length, 1);
+	        _assert2.default.equal(personFormModel['labels'][0].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][0].infos.length, 0);
+	        //labels[1]
+	        _assert2.default.equal(personFormModel['labels'][1].errors.length, 1);
+	        _assert2.default.equal(personFormModel['labels'][1].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][1].infos.length, 0);
+	        //emails[0].type
+	        _assert2.default.equal(personFormModel['emails'][0].type.errors.length, 1);
+	        _assert2.default.equal(personFormModel['emails'][0].type.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].type.infos.length, 0);
+	        //emails[0].email
+	        _assert2.default.equal(personFormModel['emails'][0].email.errors.length, 1);
+	        _assert2.default.equal(personFormModel['emails'][0].email.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].email.infos.length, 0);
+	        //emails[1].type
+	        _assert2.default.equal(personFormModel['emails'][1].type.errors.length, 1);
+	        _assert2.default.equal(personFormModel['emails'][1].type.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].type.infos.length, 0);
+	        //emails[1].email
+	        _assert2.default.equal(personFormModel['emails'][1].email.errors.length, 1);
+	        _assert2.default.equal(personFormModel['emails'][1].email.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].email.infos.length, 0);
+	        //_meta
+	        _assert2.default.equal(personFormModel['_model'].errors.length, 2);
+	        _assert2.default.equal(personFormModel['_model'].warnings.length, 1);
+	        _assert2.default.equal(personFormModel['_model'].infos.length, 1);
+	    });
+	});
+	
+	describe('isModelValid(formModel) test for invalid form model (warnings)', function () {
+	
+	    it("result is valid and only warnings are created", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        // setting errors to all fields
+	        personFormModel['name.first'].value = 'warning';
+	        personFormModel['name.last'].value = 'warning';
+	        personFormModel['age'].value = 2;
+	
+	        personFormModel['labels'][0].value = 'warning';
+	        personFormModel['labels'][1].value = 'warning';
+	
+	        personFormModel['emails'][0].type.value = 'warning';
+	        personFormModel['emails'][0].email.value = 'warning';
+	
+	        personFormModel['emails'][1].type.value = 'warning';
+	        personFormModel['emails'][1].email.value = 'warning';
+	
+	        var isModelValid = _formModelValidator2.default.isModelValid(personFormModel, personFormModelValidators);
+	        _assert2.default.equal(isModelValid, true);
+	        _assert2.default.equal(personFormModel['name.first'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['name.first'].warnings.length, 1);
+	        _assert2.default.equal(personFormModel['name.first'].infos.length, 0);
+	        //last name
+	        _assert2.default.equal(personFormModel['name.last'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['name.last'].warnings.length, 1);
+	        _assert2.default.equal(personFormModel['name.last'].infos.length, 0);
+	        // //age
+	        _assert2.default.equal(personFormModel['age'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['age'].warnings.length, 1);
+	        _assert2.default.equal(personFormModel['age'].infos.length, 0);
+	        //labels[0]
+	        _assert2.default.equal(personFormModel['labels'][0].errors.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][0].warnings.length, 1);
+	        _assert2.default.equal(personFormModel['labels'][0].infos.length, 0);
+	        //labels[1]
+	        _assert2.default.equal(personFormModel['labels'][1].errors.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][1].warnings.length, 1);
+	        _assert2.default.equal(personFormModel['labels'][1].infos.length, 0);
+	        //emails[0].type
+	        _assert2.default.equal(personFormModel['emails'][0].type.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].type.warnings.length, 1);
+	        _assert2.default.equal(personFormModel['emails'][0].type.infos.length, 0);
+	        //emails[0].email
+	        _assert2.default.equal(personFormModel['emails'][0].email.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].email.warnings.length, 1);
+	        _assert2.default.equal(personFormModel['emails'][0].email.infos.length, 0);
+	        //emails[1].type
+	        _assert2.default.equal(personFormModel['emails'][1].type.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].type.warnings.length, 1);
+	        _assert2.default.equal(personFormModel['emails'][1].type.infos.length, 0);
+	        //emails[1].email
+	        _assert2.default.equal(personFormModel['emails'][1].email.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].email.warnings.length, 1);
+	        _assert2.default.equal(personFormModel['emails'][1].email.infos.length, 0);
+	    });
+	});
+	
+	describe('isModelValid(formModel) test for invalid form model (infos)', function () {
+	
+	    it("result is valid and only infos are created", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        // setting errors to all fields
+	        personFormModel['name.first'].value = 'info';
+	        personFormModel['name.last'].value = 'info';
+	        personFormModel['age'].value = 3;
+	
+	        personFormModel['labels'][0].value = 'info';
+	        personFormModel['labels'][1].value = 'info';
+	
+	        personFormModel['emails'][0].type.value = 'info';
+	        personFormModel['emails'][0].email.value = 'info';
+	
+	        personFormModel['emails'][1].type.value = 'info';
+	        personFormModel['emails'][1].email.value = 'info';
+	
+	        var isModelValid = _formModelValidator2.default.isModelValid(personFormModel, personFormModelValidators);
+	        _assert2.default.equal(isModelValid, true);
+	        _assert2.default.equal(personFormModel['name.first'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['name.first'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['name.first'].infos.length, 1);
+	        //last name
+	        _assert2.default.equal(personFormModel['name.last'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['name.last'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['name.last'].infos.length, 1);
+	        // //age
+	        _assert2.default.equal(personFormModel['age'].errors.length, 0);
+	        _assert2.default.equal(personFormModel['age'].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['age'].infos.length, 1);
+	        //labels[0]
+	        _assert2.default.equal(personFormModel['labels'][0].errors.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][0].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][0].infos.length, 1);
+	        //labels[1]
+	        _assert2.default.equal(personFormModel['labels'][1].errors.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][1].warnings.length, 0);
+	        _assert2.default.equal(personFormModel['labels'][1].infos.length, 1);
+	        //emails[0].type
+	        _assert2.default.equal(personFormModel['emails'][0].type.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].type.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].type.infos.length, 1);
+	        //emails[0].email
+	        _assert2.default.equal(personFormModel['emails'][0].email.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].email.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][0].email.infos.length, 1);
+	        //emails[1].type
+	        _assert2.default.equal(personFormModel['emails'][1].type.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].type.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].type.infos.length, 1);
+	        //emails[1].email
+	        _assert2.default.equal(personFormModel['emails'][1].email.errors.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].email.warnings.length, 0);
+	        _assert2.default.equal(personFormModel['emails'][1].email.infos.length, 1);
+	    });
+	});
+	
+	describe('getOrCreateNestedObjects(obj, path) tests', function () {
+	
+	    it("({}, 'contact.name.first') correctly creates nested objects", function () {
 	
 	        var json = {};
 	        var nestedObject = _formModelValidator2.default.getOrCreateNestedObjects(json, 'contact.name.first');
@@ -306,7 +626,7 @@ module.exports =
 	        _assert2.default.equal(nestedObject.first, undefined);
 	    });
 	
-	    it("getOrCreateNestedObjects({ name: { first: 'John' } }, 'name.first') correctly gets existing nested objects", function () {
+	    it("({ name: { first: 'John' } }, 'name.first') correctly gets existing nested objects", function () {
 	
 	        var json = {
 	            name: {
@@ -318,8 +638,11 @@ module.exports =
 	        _assert2.default.equal(json.name.first, 'John');
 	        _assert2.default.equal(nameObject.first, 'John');
 	    });
+	});
 	
-	    it("getOrCreateNestedArray({}, 'contact.addresses') correctly creates nested array", function () {
+	describe('getOrCreateNestedObjects(obj, path) tests', function () {
+	
+	    it("({}, 'contact.addresses') correctly creates nested array", function () {
 	
 	        var json = {};
 	        var nestedArray = _formModelValidator2.default.getOrCreateNestedArray(json, 'contact.addresses');
@@ -330,7 +653,7 @@ module.exports =
 	        _assert2.default.equal(nestedArray.length, 0);
 	    });
 	
-	    it("getOrCreateNestedArray({ addresses: [ 'item 1' ] }, 'contact.addresses') correctly gets nested array", function () {
+	    it("({ addresses: [ 'item 1' ] }, 'contact.addresses') correctly gets nested array", function () {
 	
 	        var json = {
 	            contact: {
@@ -346,11 +669,12 @@ module.exports =
 	    });
 	});
 	
-	describe('Creating JSON', function () {
+	describe('getJSON(formModel,formModelValidators) tests', function () {
 	
-	    it("getJSON(personFormModel, personFormModelValidators) correctly build json", function () {
-	
-	        var json = _formModelValidator2.default.getJSON(_personFormModel.personFormModel, personFormModelValidators);
+	    it("(formModel, formModelValidators) correctly build json", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        personFormModel['_model'] = {};
+	        var json = _formModelValidator2.default.getJSON(personFormModel, personFormModelValidators);
 	        _assert2.default.equal(json.name.first, 'John');
 	        _assert2.default.equal(json.name.last, 'Brown');
 	        _assert2.default.equal(json.isAdult, true);
@@ -372,57 +696,237 @@ module.exports =
 	        _assert2.default.equal(json.labels[1].key, 'key2');
 	        _assert2.default.equal(json.labels[1].value, 'blue');
 	
+	        // '_meta' should not be added to json
+	        _assert2.default.equal(json['_model'], undefined);
+	    });
+	
+	    it("(formModel, formModelValidators) correctly build json with custom json builder", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var customPersonFormModelValidators = new _personFormModelValidators.PersonFormModelValidators();
+	        // building custom json for labels
+	        customPersonFormModelValidators['labels.getJSON'] = function (arrayItem, formModel) {
+	            return {
+	                key: arrayItem.key,
+	                value: arrayItem.value + '_changed'
+	            };
+	        };
+	        // building custom json for labels
+	        customPersonFormModelValidators['emails.getJSON'] = function (arrayItem, formModel) {
+	            return {
+	                key: arrayItem.key,
+	                value: {
+	                    type: arrayItem.type.value + '_changed',
+	                    email: arrayItem.email.value + '_changed'
+	                }
+	            };
+	        };
+	        // building custom json for first name
+	        customPersonFormModelValidators['name.first.getJSON'] = function (meta, formModel) {
+	            return meta.value + '_changed';
+	        };
+	
+	        personFormModelValidators['name.first'];
+	        personFormModel['_model'] = {};
+	        var json = _formModelValidator2.default.getJSON(personFormModel, customPersonFormModelValidators);
 	        //console.log(json);
+	        _assert2.default.equal(json.name.first, 'John_changed');
+	        _assert2.default.equal(json.name.last, 'Brown');
+	        _assert2.default.equal(json.isAdult, true);
+	        _assert2.default.equal(json.age, 30);
+	
+	        // array of emails
+	        _assert2.default.equal(json.emails.length, 2);
+	        _assert2.default.equal(json.emails[0].key, 'key1');
+	        _assert2.default.equal(json.emails[0].value.type, 'Work_changed');
+	        _assert2.default.equal(json.emails[0].value.email, 'john@company.com_changed');
+	        _assert2.default.equal(json.emails[1].key, 'key2');
+	        _assert2.default.equal(json.emails[1].value.type, 'Personal_changed');
+	        _assert2.default.equal(json.emails[1].value.email, 'john@gmail.com_changed');
+	
+	        // array of labels
+	        _assert2.default.equal(json.labels.length, 2);
+	        _assert2.default.equal(json.labels[0].key, 'key1');
+	        _assert2.default.equal(json.labels[0].value, 'red_changed');
+	        _assert2.default.equal(json.labels[1].key, 'key2');
+	        _assert2.default.equal(json.labels[1].value, 'blue_changed');
+	
+	        // '_meta' should not be added to json
+	        _assert2.default.equal(json['_model'], undefined);
 	    });
 	});
 	
-	describe('Get, check and replace errors', function () {
+	describe('getErrors(formModel) tests', function () {
+	    it("invalid form model returns errors object", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        // setting errors to all fields
+	        personFormModel['name.first'].value = 'error warning info meta_err meta_warn meta_inf';
+	        personFormModel['name.last'].value = 'error info';
+	        personFormModel['age'].value = 1;
 	
-	    it("getErrors(invalidPersonFormModel) returns errors", function () {
+	        personFormModel['labels'][0].value = 'error warning';
+	        personFormModel['labels'][1].value = 'error info';
 	
-	        // validate form to set errors
-	        _formModelValidator2.default.isModelValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators);
+	        personFormModel['emails'][0].type.value = 'error warning';
+	        personFormModel['emails'][0].email.value = 'error warning';
 	
-	        var errors = _formModelValidator2.default.getErrors(_invalidPersonFormModel.invalidPersonFormModel);
-	        _assert2.default.equal(_lodash2.default.isObject(errors), true);
-	        _assert2.default.equal(errors['name.last'].length, 1);
-	        _assert2.default.equal(errors['emails[key3].type'].length, 1);
-	        _assert2.default.equal(errors['emails[key3].email'].length, 1);
-	        _assert2.default.equal(errors['labels[key3]'].length, 1);
-	        _assert2.default.equal(errors['_modelErrors'].length, 1);
+	        personFormModel['emails'][1].type.value = 'error info';
+	        personFormModel['emails'][1].email.value = 'error info';
+	
+	        var isModelValid = _formModelValidator2.default.isModelValid(personFormModel, personFormModelValidators);
+	        var errObj = _formModelValidator2.default.getErrors(personFormModel);
+	
+	        _assert2.default.equal(errObj['name.first'].errors.length, 1);
+	        _assert2.default.equal(errObj['name.first'].warnings.length, 1);
+	        _assert2.default.equal(errObj['name.first'].infos.length, 1);
+	
+	        _assert2.default.equal(errObj['name.last'].errors.length, 1);
+	        _assert2.default.equal(errObj['name.last'].warnings, undefined);
+	        _assert2.default.equal(errObj['name.last'].infos.length, 1);
+	
+	        _assert2.default.equal(errObj['age'].errors.length, 1);
+	        _assert2.default.equal(errObj['age'].warnings, undefined);
+	        _assert2.default.equal(errObj['age'].infos, undefined);
+	
+	        _assert2.default.equal(errObj['labels[key1]'].errors.length, 1);
+	        _assert2.default.equal(errObj['labels[key1]'].warnings.length, 1);
+	        _assert2.default.equal(errObj['labels[key1]'].infos, undefined);
+	
+	        _assert2.default.equal(errObj['labels[key2]'].errors.length, 1);
+	        _assert2.default.equal(errObj['labels[key2]'].warnings, undefined);
+	        _assert2.default.equal(errObj['labels[key2]'].infos.length, 1);
+	
+	        _assert2.default.equal(errObj['emails[key1].type'].errors.length, 1);
+	        _assert2.default.equal(errObj['emails[key1].type'].warnings.length, 1);
+	        _assert2.default.equal(errObj['emails[key1].type'].infos, undefined);
+	        _assert2.default.equal(errObj['emails[key1].email'].errors.length, 1);
+	        _assert2.default.equal(errObj['emails[key1].email'].warnings.length, 1);
+	        _assert2.default.equal(errObj['emails[key1].email'].infos, undefined);
+	
+	        _assert2.default.equal(errObj['emails[key2].type'].errors.length, 1);
+	        _assert2.default.equal(errObj['emails[key2].type'].warnings, undefined);
+	        _assert2.default.equal(errObj['emails[key2].type'].infos.length, 1);
+	        _assert2.default.equal(errObj['emails[key2].email'].errors.length, 1);
+	        _assert2.default.equal(errObj['emails[key2].email'].warnings, undefined);
+	        _assert2.default.equal(errObj['emails[key2].email'].infos.length, 1);
+	
+	        _assert2.default.equal(errObj['_model'].errors.length, 2);
+	        _assert2.default.equal(errObj['_model'].warnings.length, 1);
+	        _assert2.default.equal(errObj['_model'].infos.length, 1);
 	    });
 	
-	    it("hasExistingErrors(invalidPersonFormModel) returns true", function () {
+	    it("valid form model returns empty errors object", function () {
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isModelValid = _formModelValidator2.default.isModelValid(personFormModel, personFormModelValidators);
+	        var errObj = _formModelValidator2.default.getErrors(personFormModel);
 	
-	        // validate form to set errors
-	        _formModelValidator2.default.isModelValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators);
-	        var hasErrors = _formModelValidator2.default.hasExistingErrors(_invalidPersonFormModel.invalidPersonFormModel);
+	        _assert2.default.equal(errObj['name.first'], undefined);
+	        _assert2.default.equal(errObj['name.last'], undefined);
+	        _assert2.default.equal(errObj['age'], undefined);
+	        _assert2.default.equal(errObj['labels[key1]'], undefined);
+	        _assert2.default.equal(errObj['labels[key2]'], undefined);
+	        _assert2.default.equal(errObj['emails[key1].type'], undefined);
+	        _assert2.default.equal(errObj['emails[key1].email'], undefined);
+	        _assert2.default.equal(errObj['emails[key2].type'], undefined);
+	        _assert2.default.equal(errObj['emails[key2].email'], undefined);
+	        _assert2.default.equal(errObj['_model'], undefined);
+	    });
+	});
+	
+	describe('replaceErrors(formModel, errorObj) tests', function () {
+	    it("formModel contains new errors, warnings and infos", function () {
+	
+	        // make invalid form model and get errors object for that form model
+	        var invalidPersonFormModel = (0, _personFormModel.createValidFormModel)();
+	        // setting errors to all fields
+	        invalidPersonFormModel['name.first'].value = 'error warning info meta_err meta_warn meta_inf';
+	        invalidPersonFormModel['name.last'].value = 'error info';
+	        invalidPersonFormModel['age'].value = 1;
+	
+	        invalidPersonFormModel['labels'][0].value = 'error warning';
+	        invalidPersonFormModel['labels'][1].value = 'error info';
+	
+	        invalidPersonFormModel['emails'][0].type.value = 'error warning';
+	        invalidPersonFormModel['emails'][0].email.value = 'error warning';
+	
+	        invalidPersonFormModel['emails'][1].type.value = 'error info';
+	        invalidPersonFormModel['emails'][1].email.value = 'error info';
+	
+	        var isModelValid = _formModelValidator2.default.isModelValid(invalidPersonFormModel, personFormModelValidators);
+	        var errObj = _formModelValidator2.default.getErrors(invalidPersonFormModel);
+	
+	        // create valid form model and replace errors
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        _formModelValidator2.default.replaceErrors(personFormModel, errObj);
+	
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'name.first').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'name.first').warnings.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'name.first').infos.length, 1);
+	
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'name.last').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'name.last').warnings, undefined);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'name.last').infos.length, 1);
+	
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'age').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'age').warnings, undefined);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'age').infos, undefined);
+	
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key1]').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key1]').warnings.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key1]').infos, undefined);
+	
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key2]').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key2]').warnings, undefined);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'labels[key2]').infos.length, 1);
+	
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].type').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].type').warnings.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].type').infos, undefined);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].email').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].email').warnings.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key1].email').infos, undefined);
+	
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key2].type').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key2].type').warnings, undefined);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key2].type').infos.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key2].email').errors.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key2].email').warnings, undefined);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, 'emails[key2].email').infos.length, 1);
+	
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, '_model').errors.length, 2);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, '_model').warnings.length, 1);
+	        _assert2.default.equal(_formModelValidator2.default.getMetaByPath(personFormModel, '_model').infos.length, 1);
+	    });
+	});
+	
+	describe('hasExistingErrors(formModel) tests', function () {
+	    it("valid form model has no errors", function () {
+	        // make invalid form model and get errors object for that form model
+	        var personFormModel = (0, _personFormModel.createValidFormModel)();
+	        var isModelValid = _formModelValidator2.default.isModelValid(personFormModel, personFormModelValidators);
+	        var hasErrors = _formModelValidator2.default.hasExistingErrors(personFormModel);
+	        _assert2.default.equal(hasErrors, false);
+	    });
+	
+	    it("invalid form model has errors", function () {
+	        // make invalid form model and get errors object for that form model
+	        var invalidPersonFormModel = (0, _personFormModel.createValidFormModel)();
+	        // setting errors to all fields
+	        invalidPersonFormModel['name.first'].value = 'error warning info meta_err meta_warn meta_inf';
+	        invalidPersonFormModel['name.last'].value = 'error info';
+	        invalidPersonFormModel['age'].value = 1;
+	
+	        invalidPersonFormModel['labels'][0].value = 'error warning';
+	        invalidPersonFormModel['labels'][1].value = 'error info';
+	
+	        invalidPersonFormModel['emails'][0].type.value = 'error warning';
+	        invalidPersonFormModel['emails'][0].email.value = 'error warning';
+	
+	        invalidPersonFormModel['emails'][1].type.value = 'error info';
+	        invalidPersonFormModel['emails'][1].email.value = 'error info';
+	
+	        var isModelValid = _formModelValidator2.default.isModelValid(invalidPersonFormModel, personFormModelValidators);
+	        var hasErrors = _formModelValidator2.default.hasExistingErrors(invalidPersonFormModel);
 	        _assert2.default.equal(hasErrors, true);
-	    });
-	
-	    it("replaceErrors(errorsObject) correctly replaces errors in form model", function () {
-	
-	        // validate form to set errors
-	        _formModelValidator2.default.isModelValid(_invalidPersonFormModel.invalidPersonFormModel, personFormModelValidators);
-	
-	        // change errors object (emulating that errors came from server)
-	        var serverErrors = _formModelValidator2.default.getErrors(_invalidPersonFormModel.invalidPersonFormModel);
-	        serverErrors['name.last'] = ['name.last server error'];
-	        serverErrors['emails[key3].type'] = ['emails[key3].type server error'];
-	        serverErrors['emails[key3].email'] = ['emails[key3].email server error'];
-	        serverErrors['labels[key3]'] = ['labels[key3] server error'];
-	        serverErrors['_modelErrors'] = ['_modelErrors server error'];
-	
-	        // replace errors in form model
-	        _formModelValidator2.default.replaceErrors(_invalidPersonFormModel.invalidPersonFormModel, serverErrors);
-	
-	        // get errors from form model
-	        var newFormModelErrors = _formModelValidator2.default.getErrors(_invalidPersonFormModel.invalidPersonFormModel);
-	        _assert2.default.equal(newFormModelErrors['name.last'][0], 'name.last server error');
-	        _assert2.default.equal(newFormModelErrors['emails[key3].type'][0], 'emails[key3].type server error');
-	        _assert2.default.equal(newFormModelErrors['emails[key3].email'][0], 'emails[key3].email server error');
-	        _assert2.default.equal(newFormModelErrors['labels[key3]'][0], 'labels[key3] server error');
-	        _assert2.default.equal(newFormModelErrors['_modelErrors'][0], '_modelErrors server error');
 	    });
 	});
 
@@ -436,6 +940,8 @@ module.exports =
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
+	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
@@ -563,8 +1069,15 @@ module.exports =
 	            validators = validators || [];
 	
 	            // complex validation (not for specific path)
-	            if (path === '_modelErrors') {
-	                if (!formModel['_modelErrors']) formModel['_modelErrors'] = { errors: [] };else formModel['_modelErrors'].errors = [];
+	            if (path === '_model') {
+	
+	                if (!formModel['_model']) {
+	                    formModel['_model'] = { errors: [], warnings: [], infos: [] };
+	                } else {
+	                    formModel['_model'].errors = [];
+	                    formModel['_model'].warnings = [];
+	                    formModel['_model'].infos = [];
+	                }
 	
 	                // run validator agains model value
 	                var _iteratorNormalCompletion = true;
@@ -575,12 +1088,40 @@ module.exports =
 	                    for (var _iterator = validators[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                        var validatorItem = _step.value;
 	
-	                        var result = validatorItem.validator(formModel); // Note: for complex validation, there is single argument - FormModel
+	                        var result = void 0;
+	                        try {
+	                            result = validatorItem.validator(formModel); // Note: for complex validation, there is single argument - FormModel
+	                        } catch (err) {
+	                            console.error('\nError while running validator for \'_model\'');
+	                            console.error(err);
+	                        }
 	
-	                        if (result !== true) {
-	                            valid = false;
-	                            formModel['_modelErrors'].errors.push(validatorItem.errorMessage);
-	                            break;
+	                        if (result === false) {
+	                            var message = null;
+	                            if (typeof validatorItem.message === 'string') {
+	                                message = validatorItem.message;
+	                            } else if (typeof validatorItem.message === 'function') {
+	                                message = validatorItem.message(meta.value, formModel);
+	                            } else {
+	                                console.error('Validator\'s message property is not string or function.');
+	                            }
+	
+	                            // add message to corresponding array
+	                            if (message != null) {
+	                                if (validatorItem.type === 'error') {
+	                                    formModel['_model'].errors.push(message);
+	                                    valid = false;
+	                                } else if (validatorItem.type === 'info') formModel['_model'].infos.push(message);else if (validatorItem.type === 'warning') formModel['_model'].warnings.push(message);else {
+	                                    valid = false;
+	                                    formModel['_model'].errors.push(message); // if type is not set, treat is as error
+	                                    console.warn('Validator for \'_model\' is missing type property.');
+	                                }
+	                            }
+	                        }
+	
+	                        // if validator returned something other than boolean, log it to console
+	                        if (typeof result !== 'boolean') {
+	                            console.error('Validator returned result of type ' + (typeof result === 'undefined' ? 'undefined' : _typeof(result)) + ' for \'_model\'');
 	                        }
 	                    }
 	                } catch (err) {
@@ -598,15 +1139,17 @@ module.exports =
 	                    }
 	                }
 	            } else {
-	                var meta = FormModelValidator.getMetaByPath(formModel, path);
+	                var _meta = FormModelValidator.getMetaByPath(formModel, path);
 	                // get form model value for path            
-	                if (!meta) {
+	                if (!_meta) {
 	                    console.error('FormModelValidator.isMetaValid: cannot find path of \'' + path + '\' in form model. \n                Check form model and form model validators for matching keys');
 	                    return true; // just mark meta as valid
 	                }
 	
 	                // clear previous errors
-	                meta.errors = [];
+	                _meta.errors = [];
+	                _meta.warnings = [];
+	                _meta.infos = [];
 	
 	                // run validator agains model value
 	                var _iteratorNormalCompletion2 = true;
@@ -617,11 +1160,49 @@ module.exports =
 	                    for (var _iterator2 = validators[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 	                        var _validatorItem = _step2.value;
 	
-	                        var _result = _validatorItem.validator(meta.value, formModel); // Note: for each validator function, we pass second parameter that is FormModel
-	                        if (_result !== true) {
-	                            valid = false;
-	                            meta.errors.push(_validatorItem.errorMessage);
-	                            break;
+	
+	                        // For errors array, we allow only 1 error to be present
+	                        if (_validatorItem.type === 'error' || typeof _validatorItem.type === 'undefined') {
+	                            if (_meta.errors.length != 0) continue;
+	                        }
+	
+	                        // execute validator and get result (should be boolean)
+	                        var _result = void 0;
+	                        try {
+	                            _result = _validatorItem.validator(_meta.value, formModel); // Note: for each validator function, we pass second parameter that is FormModel                
+	                        } catch (err) {
+	                            console.error('\nError while running validator for meta \'' + _meta.name + '\'');
+	                            console.error(err);
+	                        }
+	
+	                        if (_result === false) {
+	
+	                            var _message = null;
+	                            if (typeof _validatorItem.message === 'string') {
+	                                _message = _validatorItem.message;
+	                            } else if (typeof _validatorItem.message === 'function') {
+	                                _message = _validatorItem.message(_meta.value, formModel);
+	                            } else {
+	                                console.error('Validator\'s message property is not string or function.');
+	                            }
+	
+	                            // WARNING: meta is invalid if type of failed validator is type of 'error'
+	                            // add message to corresponding array
+	                            if (_message != null) {
+	                                if (_validatorItem.type === 'error') {
+	                                    _meta.errors.push(_message);
+	                                    valid = false;
+	                                } else if (_validatorItem.type === 'info') _meta.infos.push(_message);else if (_validatorItem.type === 'warning') _meta.warnings.push(_message);else {
+	                                    valid = false;
+	                                    _meta.errors.push(_message); // if type is not set, treat is as error
+	                                    console.warn('Validator for ' + _meta.name + ' is missing type property.');
+	                                }
+	                            }
+	                        }
+	
+	                        // if validator returned something other than boolean, log it to console
+	                        if (typeof _result !== 'boolean') {
+	                            console.error('Validator returned result of type ' + (typeof _result === 'undefined' ? 'undefined' : _typeof(_result)) + ' for meta \'' + _meta.name + '\'');
 	                        }
 	                    }
 	                } catch (err) {
@@ -660,6 +1241,8 @@ module.exports =
 	
 	            // now loop every path and validate value at path
 	            for (var pathIndex = 0; pathIndex < validatorPaths.length; pathIndex++) {
+	                if (valid === false && stopOnFirstError === true) break;
+	
 	                var path = validatorPaths[pathIndex];
 	
 	                if (FormModelValidator.pathIsArray(path)) {
@@ -674,36 +1257,10 @@ module.exports =
 	
 	                        formModelArray.forEach(function (arrayItem) {
 	                            var meta = arrInfo.arrayItemIsMeta ? arrayItem : arrayItem[arrInfo.metaPropertyName];
-	                            meta.errors = [];
-	                            // run validator agains meta value
-	                            var _iteratorNormalCompletion3 = true;
-	                            var _didIteratorError3 = false;
-	                            var _iteratorError3 = undefined;
 	
-	                            try {
-	                                for (var _iterator3 = arrayOfValidators[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-	                                    var validatorItem = _step3.value;
-	
-	                                    var result = validatorItem.validator(meta.value, formModel); // Note: for each validator function, we pass second parameter that is FormModel
-	                                    if (result !== true) {
-	                                        valid = false;
-	                                        meta.errors.push(validatorItem.errorMessage);
-	                                        if (stopOnFirstError === true) break;
-	                                    }
-	                                }
-	                            } catch (err) {
-	                                _didIteratorError3 = true;
-	                                _iteratorError3 = err;
-	                            } finally {
-	                                try {
-	                                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-	                                        _iterator3.return();
-	                                    }
-	                                } finally {
-	                                    if (_didIteratorError3) {
-	                                        throw _iteratorError3;
-	                                    }
-	                                }
+	                            var result = FormModelValidator.isMetaValid(formModel, formModelValidators, meta.name);
+	                            if (!result) {
+	                                valid = false;
 	                            }
 	                        });
 	                    })();
@@ -717,22 +1274,6 @@ module.exports =
 	            }
 	
 	            return valid;
-	        }
-	
-	        // function puts errors in form-model (when we get model validation on server). 
-	
-	    }, {
-	        key: 'replaceErrors',
-	        value: function replaceErrors(formModel, errors) {
-	            _lodash2.default.forOwn(errors, function (errorArray, path) {
-	                var meta = FormModelValidator.getMetaByPath(formModel, path);
-	                if (meta) {
-	                    meta.errors = [];
-	                    meta.errors = errorArray;
-	                }
-	            });
-	
-	            return formModel;
 	        }
 	
 	        // function checks is passed object has shape of metadata
@@ -800,21 +1341,23 @@ module.exports =
 	            // Make a copy of formModel
 	            var formModelCopy = _lodash2.default.cloneDeep(formModel);
 	
-	            // we always need to delete formModel['_modelErrors'] property. It is used only to display errors on web page
-	            delete formModelCopy['_modelErrors'];
+	            // we always need to delete formModel['_model'] property. It is used only to display errors on web page
+	            delete formModelCopy['_model'];
 	
 	            var result = {};
-	            _lodash2.default.forOwn(formModelCopy, function (formModelPathValue, formModelPath) {
+	            _lodash2.default.forOwn(formModelCopy, function (metaOrArray, path) {
 	
-	                if (_lodash2.default.isArray(formModelPathValue)) {
+	                if (_lodash2.default.isArray(metaOrArray)) {
 	                    (function () {
-	                        var arrayForJson = FormModelValidator.getOrCreateNestedArray(result, formModelPath);
+	                        //let arrayForJson = FormModelValidator.getOrCreateNestedArray(result, path);
+	                        _lodash2.default.set(result, path, []);
+	                        var arrayForJson = _lodash2.default.get(result, path);
 	
-	                        formModelPathValue.forEach(function (arrayItem) {
+	                        metaOrArray.forEach(function (arrayItem) {
 	                            // if formModelValidators contains function that creates json, use it
-	                            if (formModelValidators && typeof formModelValidators[formModelPath + '[].getJSON'] === 'function') {
-	                                var customJson = formModelValidators[formModelPath + '[].getJSON'](arrayItem, formModelCopy);
-	                                if (customJson != null) {
+	                            if (formModelValidators && typeof formModelValidators[path + '.getJSON'] === 'function') {
+	                                var customJson = formModelValidators[path + '.getJSON'](arrayItem, formModelCopy);
+	                                if (typeof customJson !== 'undefined' && customJson !== null) {
 	                                    arrayForJson.push(customJson);
 	                                }
 	                            } else {
@@ -841,57 +1384,130 @@ module.exports =
 	                            }
 	                        });
 	                    })();
-	                } else if (FormModelValidator.objectIsMeta(formModelPathValue)) {
-	                    // split path and create nested objects if necessary
-	                    if (formModelPath.indexOf('.') !== -1) {
-	                        var parts = formModelPath.split('.');
-	                        var nestedObject = FormModelValidator.getOrCreateNestedObjects(result, formModelPath);
-	                        nestedObject[parts[parts.length - 1]] = formModelPathValue.value;
+	                } else if (FormModelValidator.objectIsMeta(metaOrArray)) {
+	                    if (formModelValidators && typeof formModelValidators[path + '.getJSON'] === 'function') {
+	                        var customValue = formModelValidators[path + '.getJSON'](metaOrArray, formModelCopy);
+	                        if (typeof customValue !== 'undefined' && customValue !== null) {
+	                            _lodash2.default.set(result, path, customValue);
+	                        }
 	                    } else {
-	                        result[formModelPath] = formModelPathValue.value;
+	                        _lodash2.default.set(result, path, metaOrArray.value);
 	                    }
 	                }
 	            });
 	            return result;
 	        }
 	
-	        // function accepts form model and return plain json object with just errors
-	        // Example: { email: ['error1', 'error2'], firstName: ['error3', 'error4'] }
+	        // function accepts form model and return plain json object with just errors/warnings/infos    
 	
 	    }, {
 	        key: 'getErrors',
 	        value: function getErrors(formModel) {
 	            var errors = {};
-	            _lodash2.default.forOwn(formModel, function (formModelFieldValue, formModelFieldName) {
-	                if (_lodash2.default.isArray(formModelFieldValue)) {
+	            _lodash2.default.forOwn(formModel, function (metaOrArray, path) {
+	                if (_lodash2.default.isArray(metaOrArray)) {
 	                    // this is array, loop array to get errors from array items
-	                    formModelFieldValue.forEach(function (arrayItem) {
+	                    metaOrArray.forEach(function (arrayItem) {
 	                        if (arrayItem.key && FormModelValidator.objectIsMeta(arrayItem)) {
-	                            // FormModelValidator.objectIsMeta(arrayItem)
-	                            // array item is meta, get errors form that meta
+	                            // array item is object that contains single meta
+	                            var errorObjKeyName = path + '[' + arrayItem.key + ']'; // key name of error object                        
 	                            if (arrayItem.errors && arrayItem.errors.length > 0) {
-	                                errors[formModelFieldName + '[' + arrayItem.key + ']'] = arrayItem.errors;
+	                                if (!errors[errorObjKeyName]) {
+	                                    errors[errorObjKeyName] = {};
+	                                }
+	                                errors[errorObjKeyName].errors = arrayItem.errors;
+	                            }
+	                            if (arrayItem.warnings && arrayItem.warnings.length > 0) {
+	                                if (!errors[errorObjKeyName]) {
+	                                    errors[errorObjKeyName] = {};
+	                                }
+	                                errors[errorObjKeyName].warnings = arrayItem.warnings;
+	                            }
+	                            if (arrayItem.infos && arrayItem.infos.length > 0) {
+	                                if (!errors[errorObjKeyName]) {
+	                                    errors[errorObjKeyName] = {};
+	                                }
+	                                errors[errorObjKeyName].infos = arrayItem.infos;
 	                            }
 	                        } else {
-	                            // array item is object that contains meta, loop object proeprties and get errors from each meta
+	                            // array item is object that contains multiple meta, loop object proeprties and get errors from each meta
 	                            _lodash2.default.forOwn(arrayItem, function (arrayItemObjectPropValue, arrayItemObjectPropName) {
+	                                var errorObjKeyName = path + '[' + arrayItem.key + '].' + arrayItemObjectPropName;
 	                                if (FormModelValidator.objectIsMeta(arrayItemObjectPropValue)) {
-	                                    // array item is meta, get errors form that meta
 	                                    if (arrayItemObjectPropValue.errors && arrayItemObjectPropValue.errors.length > 0) {
-	                                        errors[formModelFieldName + '[' + arrayItem.key + '].' + arrayItemObjectPropName] = arrayItemObjectPropValue.errors;
+	                                        if (!errors[errorObjKeyName]) {
+	                                            errors[errorObjKeyName] = {};
+	                                        }
+	                                        errors[errorObjKeyName].errors = arrayItemObjectPropValue.errors;
+	                                    }
+	                                    if (arrayItemObjectPropValue.warnings && arrayItemObjectPropValue.warnings.length > 0) {
+	                                        if (!errors[errorObjKeyName]) {
+	                                            errors[errorObjKeyName] = {};
+	                                        }
+	                                        errors[errorObjKeyName].warnings = arrayItemObjectPropValue.warnings;
+	                                    }
+	                                    if (arrayItemObjectPropValue.infos && arrayItemObjectPropValue.infos.length > 0) {
+	                                        if (!errors[errorObjKeyName]) {
+	                                            errors[errorObjKeyName] = {};
+	                                        }
+	                                        errors[errorObjKeyName].infos = arrayItemObjectPropValue.infos;
 	                                    }
 	                                }
 	                            });
 	                        }
 	                    });
-	                } else if (FormModelValidator.objectIsMeta(formModelFieldValue) || formModelFieldName === "_modelErrors") {
-	                    if (formModelFieldValue.errors && formModelFieldValue.errors.length > 0) {
-	                        errors[formModelFieldName] = formModelFieldValue.errors;
+	                } else if (FormModelValidator.objectIsMeta(metaOrArray) || path === "_model") {
+	
+	                    if (metaOrArray.errors && metaOrArray.errors.length > 0) {
+	                        if (!errors[path]) {
+	                            errors[path] = {};
+	                        }
+	                        errors[path].errors = metaOrArray.errors;
+	                    }
+	                    if (metaOrArray.warnings && metaOrArray.warnings.length > 0) {
+	                        if (!errors[path]) {
+	                            errors[path] = {};
+	                        }
+	                        errors[path].warnings = metaOrArray.warnings;
+	                    }
+	                    if (metaOrArray.infos && metaOrArray.infos.length > 0) {
+	                        if (!errors[path]) {
+	                            errors[path] = {};
+	                        }
+	                        errors[path].infos = metaOrArray.infos;
 	                    }
 	                }
 	            });
 	
 	            return errors;
+	        }
+	
+	        // function puts errors in form-model (when we get model validation on server). 
+	
+	    }, {
+	        key: 'replaceErrors',
+	        value: function replaceErrors(formModel, errors) {
+	            _lodash2.default.forOwn(errors, function (obj, path) {
+	                var meta = null;
+	                if (path === '_model') {
+	                    meta = FormModelValidator.getMetaByPath(formModel, path);
+	                    if (!meta) {
+	                        meta = {};
+	                        formModel['_model'] = meta;
+	                    }
+	                } else {
+	                    meta = FormModelValidator.getMetaByPath(formModel, path);
+	                }
+	
+	                if (meta) {
+	                    meta.errors = [];
+	                    meta.errors = obj.errors;
+	                    meta.warnings = obj.warnings;
+	                    meta.infos = obj.infos;
+	                }
+	            });
+	
+	            return formModel;
 	        }
 	
 	        // function returns true if form model has errors (validators will not be run agains form model paths)
@@ -900,13 +1516,13 @@ module.exports =
 	        key: 'hasExistingErrors',
 	        value: function hasExistingErrors(formModel) {
 	            var hasErrors = false;
-	            _lodash2.default.forOwn(formModel, function (formModelPathValue, formModelPath) {
+	            _lodash2.default.forOwn(formModel, function (metaOrArray, path) {
 	                if (hasErrors === true) {
 	                    return hasErrors;
 	                }
-	                if (_lodash2.default.isArray(formModelPathValue)) {
+	                if (_lodash2.default.isArray(metaOrArray)) {
 	                    // this is array, loop array to get errors from array items
-	                    formModelPathValue.forEach(function (arrayItem) {
+	                    metaOrArray.forEach(function (arrayItem) {
 	                        if (FormModelValidator.objectIsMeta(arrayItem)) {
 	                            // array item is meta, get errors form that meta
 	                            if (arrayItem.errors && arrayItem.errors.length > 0) {
@@ -924,8 +1540,8 @@ module.exports =
 	                            });
 	                        }
 	                    });
-	                } else if (FormModelValidator.objectIsMeta(formModelPathValue) || formModelPath === "_modelErrors") {
-	                    if (formModelPathValue.errors && formModelPathValue.errors.length > 0) {
+	                } else if (FormModelValidator.objectIsMeta(metaOrArray) || path === "_model") {
+	                    if (metaOrArray.errors && metaOrArray.errors.length > 0) {
 	                        hasErrors = true;
 	                    }
 	                }
@@ -18058,29 +18674,37 @@ module.exports =
 /***/ },
 
 /***/ 74:
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	var personFormModel = exports.personFormModel = {
+	exports.createValidFormModel = createValidFormModel;
+	
+	var _lodash = __webpack_require__(2);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	var personFormModel = {
 	
 	    'not.meta': {},
 	
 	    'name.first': {
 	        title: 'First name',
 	        name: 'name.first',
-	        value: 'John'
+	        value: 'John',
+	        maxLength: 100
 	        // errors field is missing, but it is still meta
 	    },
 	
 	    'name.last': {
 	        title: 'Last name',
 	        name: 'name.last',
-	        value: 'Brown',
-	        errors: []
+	        value: 'Brown'
 	    },
 	
 	    'isAdult': {
@@ -18100,28 +18724,24 @@ module.exports =
 	        type: {
 	            title: 'Email type',
 	            name: 'emails[key1].type',
-	            value: 'Work',
-	            errors: []
+	            value: 'Work'
 	        },
 	        email: {
 	            title: 'Email',
 	            name: 'emails[key1].email',
-	            value: 'john@company.com',
-	            errors: []
+	            value: 'john@company.com'
 	        }
 	    }, {
 	        key: 'key2',
 	        type: {
 	            title: 'Email type',
 	            name: 'emails[key2].type',
-	            value: 'Personal',
-	            errors: []
+	            value: 'Personal'
 	        },
 	        email: {
 	            title: 'Email',
 	            name: 'emails[key2].email',
-	            value: 'john@gmail.com',
-	            errors: []
+	            value: 'john@gmail.com'
 	        }
 	    }],
 	
@@ -18129,75 +18749,24 @@ module.exports =
 	        key: 'key1',
 	        title: 'Label',
 	        name: 'labels[key1]',
-	        value: 'red',
-	        errors: []
-	
+	        value: 'red'
 	    }, {
 	        key: 'key2',
 	        title: 'Label',
 	        name: 'labels[key2]',
-	        value: 'blue',
-	        errors: []
+	        value: 'blue'
 	    }]
+	
 	};
+	
+	function createValidFormModel() {
+	    var formModel = _lodash2.default.cloneDeep(personFormModel);
+	    return formModel;
+	}
 
 /***/ },
 
 /***/ 75:
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	exports.invalidPersonFormModel = undefined;
-	
-	var _lodash = __webpack_require__(2);
-	
-	var _lodash2 = _interopRequireDefault(_lodash);
-	
-	var _personFormModel = __webpack_require__(74);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	// Creating form model with invalid metas
-	var invalidPersonFormModel = _lodash2.default.cloneDeep(_personFormModel.personFormModel);
-	
-	invalidPersonFormModel['name.last'].value = '';
-	
-	// creating invalid email (type can be only Work or Personal, and email cannot contain temp.com)
-	invalidPersonFormModel.emails.push({
-	    key: 'key3',
-	    type: {
-	        title: 'Email type',
-	        name: 'emails[key3].type',
-	        value: 'Other',
-	        errors: []
-	    },
-	    email: {
-	        title: 'Email',
-	        name: 'emails[key3].email',
-	        value: 'john@temp.com',
-	        errors: []
-	    }
-	});
-	
-	// creating invalid label (label value cannot exceed 5 characters)
-	invalidPersonFormModel.labels.push({
-	    key: 'key3',
-	    title: 'Label',
-	    name: 'labels[key3]',
-	    value: 'very_long_value',
-	    errors: []
-	
-	});
-	
-	exports.invalidPersonFormModel = invalidPersonFormModel;
-
-/***/ },
-
-/***/ 76:
 /***/ function(module, exports) {
 
 	'use strict';
@@ -18213,54 +18782,177 @@ module.exports =
 	
 	    this['name.first'] = [{
 	        validator: function validator(value, formModel) {
-	            return value.length < 10;
+	            return value.indexOf('error') === -1;
 	        },
-	        errorMessage: 'First name must be less than 10 characters'
+	        message: 'this is error for name.first',
+	        type: 'error'
 	    }, {
 	        validator: function validator(value, formModel) {
-	            return value && value.length > 0;
+	            return value.indexOf('error') === -1;
 	        },
-	        errorMessage: 'First name is required'
+	        message: 'this is error for name.first (duplicate)',
+	        type: 'error'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('warning') === -1;
+	        },
+	        message: 'this is warning for name.first',
+	        type: 'warning'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('info') === -1;
+	        },
+	        message: function message(value) {
+	            return 'this is info for name.first';
+	        },
+	        type: 'info'
 	    }], this['name.last'] = [{
 	        validator: function validator(value, formModel) {
-	            return value && value.length > 0;
+	            return value.indexOf('error') === -1;
 	        },
-	        errorMessage: 'Last name is required'
+	        message: 'this is error for name.last',
+	        type: 'error'
 	    }, {
 	        validator: function validator(value, formModel) {
-	            return value != '1234567890';
+	            return value.indexOf('warning') === -1;
 	        },
-	        errorMessage: 'Last name cannot be 1234567890'
+	        message: 'this is warning for name.last',
+	        type: 'warning'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('info') === -1;
+	        },
+	        message: function message(value) {
+	            return 'this is info for name.last';
+	        },
+	        type: 'info'
+	    }], this['age'] = [{
+	        validator: function validator(value, formModel) {
+	            return value != 1;
+	        },
+	        message: 'this is error for name.last',
+	        type: 'error'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value != 2;
+	        },
+	        message: 'this is warning for name.last',
+	        type: 'warning'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value != 3;
+	        },
+	        message: function message(value) {
+	            return 'this is info for name.last';
+	        },
+	        type: 'info'
 	    }];
 	
 	    this['labels[]'] = [{
 	        validator: function validator(value, formModel) {
-	            return value.length < 5;
+	            return value.indexOf('error') === -1;
 	        },
-	        errorMessage: 'Label must be less than 5 characters'
+	        message: 'this is error for label',
+	        type: 'error'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('warning') === -1;
+	        },
+	        message: 'this is warning for label',
+	        type: 'warning'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('info') === -1;
+	        },
+	        message: 'this is info for label',
+	        type: 'info'
 	    }];
 	
 	    this['emails[].type'] = [{
 	        validator: function validator(value, formModel) {
-	            return value == "Work" || value == "Personal";
+	            return value.indexOf('error') === -1;
 	        },
-	        errorMessage: 'Type of email can only be Work or Personal'
+	        message: 'this is error for emails[].type',
+	        type: 'error'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('warning') === -1;
+	        },
+	        message: 'this is warning for emails[].type',
+	        type: 'warning'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('info') === -1;
+	        },
+	        message: 'this is info for emails[].type',
+	        type: 'info'
 	    }], this['emails[].email'] = [{
 	        validator: function validator(value, formModel) {
-	            return value.indexOf('@temp.com') == -1;
+	            return value.indexOf('error') === -1;
 	        },
-	        errorMessage: 'gmail.com is not allowed'
-	    }], this._modelErrors = [{
+	        message: 'this is error for emails[].email',
+	        type: 'error'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('warning') === -1;
+	        },
+	        message: 'this is warning for emails[].email',
+	        type: 'warning'
+	    }, {
+	        validator: function validator(value, formModel) {
+	            return value.indexOf('info') === -1;
+	        },
+	        message: 'this is info for emails[].email',
+	        type: 'info'
+	    }], this['_model'] = [{
 	        validator: function validator(formModel) {
-	            return formModel.labels.length <= 2;
+	            return formModel['name.first'].value.indexOf('meta_err') === -1;
 	        },
-	        errorMessage: 'Maximum 2 labels allowed'
+	        message: 'this is error for _model',
+	        type: 'error'
 	    }, {
 	        validator: function validator(formModel) {
-	            return formModel.emails.length <= 2;
+	            return formModel['name.first'].value.indexOf('meta_err') === -1;
 	        },
-	        errorMessage: 'Maximum 1 email allowed'
+	        message: 'this is error for _model (duplicate)',
+	        type: 'error'
+	    }, {
+	        validator: function validator(formModel) {
+	            return formModel['name.first'].value.indexOf('meta_warn') === -1;
+	        },
+	        message: 'this is warning for _model',
+	        type: 'warning'
+	    }, {
+	        validator: function validator(formModel) {
+	            return formModel['name.first'].value.indexOf('meta_inf') === -1;
+	        },
+	        message: 'this is info for _model',
+	        type: 'info'
 	    }];
+	
+	    // uncomment to have custom json creator for labels array
+	    // this['labels[].getJSON'] = (arrayItem, formModel) => {
+	    //     return {
+	    //         key: arrayItem.key,
+	    //         value: arrayItem.value
+	    //     }
+	    // }
+	
+	    // uncomment to have custom json creator for emails array
+	    // this['emails[].getJSON'] = (arrayItem, formModel) => {
+	    //     return {
+	    //         key: arrayItem.key,
+	    //         value: {
+	    //             type: arrayItem.type.value,
+	    //             email: arrayItem.email.value
+	    //         }
+	    //     }
+	    // }
+	
+	    // uncomment to have custom value for json's name.first path
+	    // this['name.first.getJSON'] = (meta, formModel) => {
+	    //     return meta.value
+	    // }
 	};
 
 /***/ }
