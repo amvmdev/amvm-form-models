@@ -509,8 +509,8 @@ module.exports =
 	
 	                        metaOrArray.forEach(function (arrayItem) {
 	                            // if formModelValidators contains function that creates json, use it
-	                            if (formModelValidators && typeof formModelValidators[path + '.getJSON'] === 'function') {
-	                                var customJson = formModelValidators[path + '.getJSON'](arrayItem, formModelCopy);
+	                            if (formModelValidators && typeof formModelValidators[path + '[].getJSON'] === 'function') {
+	                                var customJson = formModelValidators[path + '[].getJSON'](arrayItem, formModelCopy);
 	                                if (typeof customJson !== 'undefined' && customJson !== null) {
 	                                    arrayForJson.push(customJson);
 	                                }

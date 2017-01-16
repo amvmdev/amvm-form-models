@@ -704,14 +704,14 @@ module.exports =
 	        var personFormModel = (0, _personFormModel.createValidFormModel)();
 	        var customPersonFormModelValidators = new _personFormModelValidators.PersonFormModelValidators();
 	        // building custom json for labels
-	        customPersonFormModelValidators['labels.getJSON'] = function (arrayItem, formModel) {
+	        customPersonFormModelValidators['labels[].getJSON'] = function (arrayItem, formModel) {
 	            return {
 	                key: arrayItem.key,
 	                value: arrayItem.value + '_changed'
 	            };
 	        };
 	        // building custom json for labels
-	        customPersonFormModelValidators['emails.getJSON'] = function (arrayItem, formModel) {
+	        customPersonFormModelValidators['emails[].getJSON'] = function (arrayItem, formModel) {
 	            return {
 	                key: arrayItem.key,
 	                value: {
@@ -1355,8 +1355,8 @@ module.exports =
 	
 	                        metaOrArray.forEach(function (arrayItem) {
 	                            // if formModelValidators contains function that creates json, use it
-	                            if (formModelValidators && typeof formModelValidators[path + '.getJSON'] === 'function') {
-	                                var customJson = formModelValidators[path + '.getJSON'](arrayItem, formModelCopy);
+	                            if (formModelValidators && typeof formModelValidators[path + '[].getJSON'] === 'function') {
+	                                var customJson = formModelValidators[path + '[].getJSON'](arrayItem, formModelCopy);
 	                                if (typeof customJson !== 'undefined' && customJson !== null) {
 	                                    arrayForJson.push(customJson);
 	                                }

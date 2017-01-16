@@ -659,14 +659,14 @@ describe('getJSON(formModel,formModelValidators) tests', function () {
         let personFormModel = createValidFormModel();
         let customPersonFormModelValidators = new PersonFormModelValidators();
         // building custom json for labels
-        customPersonFormModelValidators['labels.getJSON'] = (arrayItem, formModel) => {
+        customPersonFormModelValidators['labels[].getJSON'] = (arrayItem, formModel) => {
             return { 
                 key: arrayItem.key, 
                 value: arrayItem.value + '_changed' 
             }
         };
         // building custom json for labels
-        customPersonFormModelValidators['emails.getJSON'] = (arrayItem, formModel) => {
+        customPersonFormModelValidators['emails[].getJSON'] = (arrayItem, formModel) => {
             return {
                 key: arrayItem.key,
                 value: { 
