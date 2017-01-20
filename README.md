@@ -428,12 +428,14 @@ createFullModel(json, fnFormModel, fnFormModelValidators, fnFullModel, httpReque
 ```
 
 This function accepts json from client and creates full model that will be stored in database.
+
 Property | Description
 --- | ---
 json | JSON that came from client.
 fnFormModel | Form model constructor function. This constructor function accepts json and creates form model with values from that json. Extra properties in json are ignored when building form model. Same constructor function has to be used on the client to create json.
 fnFormModelValidators | Constructor function that contains validator for form model properties.
 fnFullModel | Full model constructor function. This function takes json and creates json object that represents full model that will be stored in database.
+
 
 Result of this function call:
 ```javascript
@@ -467,6 +469,7 @@ createFormModel(json, fnFormModel, fnFormModelValidators);
 ```
 
 This function accepts json from client and creates form model and returnes json from that form model.
+
 Property | Description
 --- | ---
 json | JSON that came from client.
