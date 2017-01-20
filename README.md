@@ -413,3 +413,77 @@ If form model validator has function that creates custom json, it will be used t
 
 #### hasExistingErrors(formModel)
 Function returns true if form model has errors (validators will not be run agains form model field).
+
+
+
+
+## Server helpers
+
+### Creating form model
+
+#### createFullModel
+
+```javascript
+createFullModel(json, fnFormModel, fnFormModelValidators, fnFullModel, httpRequest);
+```
+
+This function accepts json from client and creates full model that will be stored in database.
+Property | Description
+--- | ---
+json | JSON that came from client.
+fnFormModel | Form model constructor function. This constructor function accepts json and creates form model with values from that json. Extra properties in json are ignored when building form model. Same constructor function has to be used on the client to create json.
+fnFormModelValidators | Constructor function that contains validator for form model properties.
+fnFullModel | Full model constructor function. This function takes json and creates json object that represents full model that will be stored in database.
+
+Result of this function call:
+```javascript
+ {
+    isValid: true|false,
+    json: {...},
+    errors: {...}
+}
+```
+
+`isValid` is set to true if after creating form model with json, form model can be successfully validated using `fnFormModelValidators`.
+
+`json` is JSON object that will go into database. This is complete model of business entity. `meta` and `_id` properties will be deleted from returned json.
+
+`errors` is errors object created by calling `FormModelValidator.getErrors(formModel)` is `isValid` is false.
+
+
+#### createFullModelAnon
+
+```javascript
+createFullModel(json, fnFormModel, fnFormModelValidators, fnFullModel, httpRequest);
+```
+
+Function does the same as `createFullModel` except it does not set ownerId in meta.
+
+
+#### createFormModel
+
+```javascript
+createFormModel(json, fnFormModel, fnFormModelValidators);
+```
+
+This function accepts json from client and creates form model and returnes json from that form model.
+Property | Description
+--- | ---
+json | JSON that came from client.
+fnFormModel | Form model constructor function. This constructor function accepts json and creates form model with values from that json. Extra properties in json are ignored when building form model. Same constructor function has to be used on the client to create json.
+fnFormModelValidators | Constructor function that contains validator for form model properties.
+
+Result of this function call:
+```javascript
+ {
+    isValid: true|false,
+    json: {...},
+    errors: {...}
+}
+```
+
+`isValid` is set to true if after creating form model with json, form model can be successfully validated using `fnFormModelValidators`.
+
+`json` is JSON object created from form model. 
+
+`errors` is errors object created by calling `FormModelValidator.getErrors(formModel)` is `isValid` is false.
