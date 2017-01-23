@@ -442,7 +442,8 @@ Result of this function call:
  {
     isValid: true|false,
     json: {...},
-    errors: {...}
+    errors: {...},
+    formModel: {...}
 }
 ```
 
@@ -451,6 +452,8 @@ Result of this function call:
 `json` is JSON object that will go into database. This is complete model of business entity. `meta` and `_id` properties will be deleted from returned json.
 
 `errors` is errors object created by calling `FormModelValidator.getErrors(formModel)` is `isValid` is false.
+
+`formModel` is form model created from json
 
 
 #### createFullModelAnon
@@ -481,7 +484,8 @@ Result of this function call:
  {
     isValid: true|false,
     json: {...},
-    errors: {...}
+    errors: {...},
+    formModel: {...}
 }
 ```
 
@@ -490,3 +494,5 @@ Result of this function call:
 `json` is JSON object created from form model. 
 
 `errors` is errors object created by calling `FormModelValidator.getErrors(formModel)` is `isValid` is false.
+
+`formModel` is form model created from json

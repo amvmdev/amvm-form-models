@@ -5,14 +5,16 @@ export function createFullModel(json, fnFormModel, fnFormModelValidators, fnFull
     {   
         isValid: true if we can validate json
         json: json with meta property. This json will go into database
-        errors: object with errors if validation fails        
+        errors: object with errors if validation fails
+        formModel: form model created from json
     }
     */
 
     let result = {
         isValid: false,
         json: null,
-        errors: null
+        errors: null,
+        formModel: null
     };
 
 
@@ -21,6 +23,7 @@ export function createFullModel(json, fnFormModel, fnFormModelValidators, fnFull
 
     // save result of validating form model
     result.isValid = FormModelValidator.isModelValid(formModel, new fnFormModelValidators());
+    result.formModel = formModel;
     
     if (!result.isValid) {
         // if form model is not valid, then create object with errors for that model.
@@ -68,14 +71,16 @@ export function createFullModelAnon(json, fnFormModel, fnFormModelValidators, fn
     {   
         isValid: true if we can validate json
         json: json with metadata. This json will go into database
-        errors: object with errors if validation fails        
+        errors: object with errors if validation fails
+        formModel: form model created from json
     }
     */
 
     let result = {
         isValid: false,
         json: null,
-        errors: null
+        errors: null,
+        formModel: null
     };
 
 
@@ -84,6 +89,7 @@ export function createFullModelAnon(json, fnFormModel, fnFormModelValidators, fn
 
     // save result of validating form model
     result.isValid = FormModelValidator.isModelValid(formModel, new fnFormModelValidators());
+    result.formModel = formModel;
     
     if (!result.isValid) {
         // if form model is not valid, then create object with errors for that model.
@@ -132,14 +138,16 @@ export function createFormModel(json, fnFormModel, fnFormModelValidators) {
     {   
         isValid: true if we can validate json
         json: json with metadata. This json will go into database
-        errors: object with errors if validation fails        
+        errors: object with errors if validation fails  
+        formModel: form model created from json      
     }
     */
 
     let result = {
         isValid: false,
         json: null,
-        errors: null
+        errors: null,
+        formModel: null
     };
 
 
@@ -148,7 +156,7 @@ export function createFormModel(json, fnFormModel, fnFormModelValidators) {
 
     // save result of validating form model
     result.isValid = FormModelValidator.isModelValid(formModel, new fnFormModelValidators());
-    
+    result.formModel = formModel;
     if (!result.isValid) {
         // if form model is not valid, then create object with errors for that model.
         // this error object will be send to client to display validation errors
