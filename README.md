@@ -424,7 +424,7 @@ Function returns true if form model has errors (validators will not be run again
 #### createFullModel
 
 ```javascript
-createFullModel(json, fnFormModel, fnFormModelValidators, fnFullModel, httpRequest);
+createFullModel(json, fnFormModel, fnFormModelValidators, fnFullModel, fnPostProcess);
 ```
 
 This function accepts json from client and creates full model that will be stored in database.
@@ -435,6 +435,7 @@ json | JSON that came from client.
 fnFormModel | Form model constructor function. This constructor function accepts json and creates form model with values from that json. Extra properties in json are ignored when building form model. Same constructor function has to be used on the client to create json.
 fnFormModelValidators | Constructor function that contains validator for form model properties.
 fnFullModel | Full model constructor function. This function takes json and creates json object that represents full model that will be stored in database.
+fnPostProcess | Function that will be called after json is created. This function can be used to modify json.
 
 
 Result of this function call:
@@ -456,19 +457,10 @@ Result of this function call:
 `formModel` is form model created from json
 
 
-#### createFullModelAnon
-
-```javascript
-createFullModel(json, fnFormModel, fnFormModelValidators, fnFullModel, httpRequest);
-```
-
-Function does the same as `createFullModel` except it does not set ownerId in meta.
-
-
 #### createFormModel
 
 ```javascript
-createFormModel(json, fnFormModel, fnFormModelValidators);
+createFormModel(json, fnFormModel, fnFormModelValidators, fnPostProcess);
 ```
 
 This function accepts json from client and creates form model and returnes json from that form model.
@@ -478,6 +470,7 @@ Property | Description
 json | JSON that came from client.
 fnFormModel | Form model constructor function. This constructor function accepts json and creates form model with values from that json. Extra properties in json are ignored when building form model. Same constructor function has to be used on the client to create json.
 fnFormModelValidators | Constructor function that contains validator for form model properties.
+fnPostProcess | Function that will be called after json is created. This function can be used to modify json.
 
 Result of this function call:
 ```javascript
